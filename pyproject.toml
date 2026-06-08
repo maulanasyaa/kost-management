@@ -1,0 +1,19 @@
+[project]
+name = "kost-management"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "alembic>=1.18.4",
+    "bcrypt>=5.0.0",
+    "dotenv>=0.9.9",
+    "fastapi>=0.136.1",
+    "ipykernel>=7.2.0",
+    "pyjwt>=2.13.0",
+    "python-dateutil>=2.9.0.post0",
+    "python-dotenv>=1.2.2",
+    "python-jose[cryptography]>=3.5.0",
+    "sqlalchemy>=2.0.49",
+    "uvicorn>=0.46.0",
+]
