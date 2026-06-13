@@ -4,15 +4,15 @@ from pathlib import Path
 
 import bcrypt
 import jwt
-from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-
 from database import get_db
+from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from models import account as models
 from models import renter as renter_models
 from models.account import AccountRole
 from schemas import account as schemas
+from sqlalchemy.orm import Session
+from utils import get_current_user
 
 load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
@@ -92,8 +92,10 @@ def register_account(
 
 
 # login
-@router.post("/login", response_model=schemas.AccountResponse)
-def account_login(account: schemas.AccountLogin, db: Session = Depends(get_db)):
+@router.post("/login", response_model=schemas.LoginResponse)
+def account_login(
+    account: schemas.AccountLogin, response: Response, db: Session = Depends(get_db)
+):
 
     account_by_email = (
         db.query(models.Account).filter(models.Account.email == account.email).first()
@@ -120,4 +122,19 @@ def account_login(account: schemas.AccountLogin, db: Session = Depends(get_db)):
     }
     access_token = create_access_token(token_payload)
 
-    return schemas.AccountResponse(access_token=access_token, token_type="bearer")
+    response.set_cookie(key="token", value=access_token, httponly=True, samesite="lax")
+
+    return {"message": "Login berhasil."}
+
+
+# get active account
+@router.get("/me", response_model=schemas.AccountMe)
+def get_active_user(current_user: models.Account = Depends(get_current_user)):
+    return current_user
+
+
+# logout
+@router.post("/logout")
+def logout_account(response: Response, current_user=Depends(get_current_user)):
+    response.delete_cookie(key="token")
+    return {"message": "Berhasil Logout"}

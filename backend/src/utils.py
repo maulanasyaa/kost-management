@@ -1,17 +1,15 @@
 import os
 from pathlib import Path
-from typing import Annotated
 
 import jwt
+from database import get_db
 from dotenv import load_dotenv
-from fastapi import Depends, HTTPException, status
+from fastapi import Cookie, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
-from sqlalchemy.orm import Session
-
-from database import get_db
 from models import account as models
 from schemas import account as schemas
+from sqlalchemy.orm import Session
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
@@ -30,14 +28,15 @@ def get_user(account_id: int, db: Session) -> models.Account:
     return account
 
 
-def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
-):
+def get_current_user(token: str = Cookie(default=None), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    if token is None:
+        raise credentials_exception
 
     try:
         payload = jwt.decode(token, SECRET_JWT, algorithms=[ALGORITHM])

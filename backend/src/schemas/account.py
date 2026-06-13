@@ -20,10 +20,14 @@ class AccountLogin(BaseModel):
     password: str
 
 
-class AccountResponse(BaseModel):
-    access_token: str
-    token_type: str
+class LoginResponse(BaseModel):
+    message: str
 
 
 class TokenData(BaseModel):
     id: int
+
+
+class AccountMe(BaseModel):
+    id: int
+    email: str
