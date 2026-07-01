@@ -1,9 +1,13 @@
 from datetime import date
-
-from sqlalchemy import Date, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import TYPE_CHECKING
 
 from database import Base
+from sqlalchemy import Date, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+if TYPE_CHECKING:
+    from models.renter import Renter
+    from models.room import Room
 
 
 class Contract(Base):
@@ -15,3 +19,6 @@ class Contract(Base):
     price: Mapped[int] = mapped_column()
     start_date: Mapped[date] = mapped_column(Date)
     end_date: Mapped[date] = mapped_column(Date)
+
+    room: Mapped["Room"] = relationship(back_populates="contracts")
+    renter: Mapped["Renter"] = relationship(back_populates="contracts")

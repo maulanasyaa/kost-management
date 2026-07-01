@@ -1,12 +1,13 @@
+from datetime import date
 from typing import Sequence
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-
 from database import get_db
+from fastapi import APIRouter, Depends, HTTPException, status
 from models import account as account_models
+from models import contract as contract_models
 from models import room as models
 from schemas import room as schemas
+from sqlalchemy.orm import Session, joinedload
 from utils import get_current_user, require_admin
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
@@ -66,6 +67,51 @@ def get_rooms(
     rooms = db.query(models.Room).offset(skip).limit(limit).all()
 
     return rooms
+
+
+@router.get("/summary", response_model=list[schemas.RoomCardOut])
+def get_rooms_summary(
+    current_user: account_models.Account = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> list[schemas.RoomCardOut]:
+
+    today = date.today()
+
+    # ambil semua room + contract + renter dalam 1 query (bukan query berulang)
+    rooms = (
+        db.query(models.Room)
+        .options(
+            joinedload(models.Room.contracts).joinedload(
+                contract_models.Contract.renter
+            )
+        )
+        .all()
+    )
+
+    result = []
+    for room in rooms:
+        # find active contract
+        active_contract = next(
+            (c for c in room.contracts if c.start_date <= today <= c.end_date),
+            None,
+        )
+
+        result.append(
+            schemas.RoomCardOut(
+                id=room.id,
+                room_number=room.room_number,
+                room_type=room.room_type,
+                price=room.price,
+                status="occupied" if active_contract else "vacant",
+                renter=schemas.RenterOut.model_validate(active_contract.renter)
+                if active_contract
+                else None,
+                contract=schemas.ContractOut.model_validate(active_contract)
+                if active_contract
+                else None,
+            )
+        )
+    return result
 
 
 @router.get("/{room_id}", response_model=schemas.RoomResponse)

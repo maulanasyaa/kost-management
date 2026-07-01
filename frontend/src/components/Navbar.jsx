@@ -1,14 +1,22 @@
-import { HousePlus } from "lucide-react";
+import { HousePlus, LogOut } from "lucide-react";
+
 function Navbar() {
   return (
-    <div className="bg-gray-100 w-full h-1/12 flex items-center relative">
-      <HousePlus className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-800"></HousePlus>
-      <h1 className="absolute left-10 font-bold text-xl">Kost Management</h1>
-      <div className="absolute w-px bg-gray-300 h-10 right-38"></div>
-      <button className="absolute right-7 border-2 p-1 px-5 rounded-md hover:bg-amber-200">
-        Logout
-      </button>
-    </div>
+    <nav className="bg-primary w-full h-16 flex items-center justify-between px-6 shrink-0">
+      <div className="flex items-center gap-2">
+        <HousePlus className="text-accent w-6 h-6" />
+        <h1 className="font-bold text-xl text-surface">Kost Management</h1>
+      </div>
+
+      <div className="flex items-center gap-6">
+        <div className="w-px h-8 bg-white/10" />
+        <button className="flex items-center gap-2 border border-white/15 text-surface/80 px-4 py-1.5 rounded-md hover:bg-accent hover:border-accent hover:text-white transition-all duration-200 cursor-pointer">
+          <LogOut className="w-4 h-4" />
+          Logout
+        </button>
+      </div>
+    </nav>
   );
 }
+
 export default Navbar;
