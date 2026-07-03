@@ -6,7 +6,16 @@ import {
   Trash2,
 } from "lucide-react";
 
-function RoomCard({ room_number, room_type, status, renter, contract, price }) {
+function RoomCard({
+  id,
+  onDelete,
+  room_number,
+  room_type,
+  status,
+  renter,
+  contract,
+  price,
+}) {
   return (
     <div className="flex flex-col bg-white border border-border-soft w-full p-6 gap-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
       <div className="flex justify-between items-center border-b border-border-soft pb-4">
@@ -73,7 +82,12 @@ function RoomCard({ room_number, room_type, status, renter, contract, price }) {
         </div>
         <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
           <Trash2 className="w-4 h-4" />
-          <button className="text-sm font-semibold">Delete</button>
+          <button
+            className="text-sm font-semibold"
+            onClick={() => onDelete(id)}
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>

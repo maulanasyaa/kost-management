@@ -27,13 +27,13 @@ def get_room_or_404(room_id: int, db: Session) -> models.Room:
 
 # create
 @router.post(
-    "/", response_model=schemas.RoomResponse, status_code=status.HTTP_201_CREATED
+    "/", response_model=schemas.RoomCardOut, status_code=status.HTTP_201_CREATED
 )
 def create_room(
     room: schemas.RoomCreate,
     db: Session = Depends(get_db),
     _: account_models.Account = Depends(require_admin),
-) -> models.Room:
+) -> schemas.RoomCardOut:
     data = room.model_dump()
 
     room_number_check = (
@@ -53,7 +53,15 @@ def create_room(
     db.commit()
     db.refresh(db_room)
 
-    return db_room
+    return schemas.RoomCardOut(
+        id=db_room.id,
+        room_number=db_room.room_number,
+        room_type=db_room.room_type,
+        price=db_room.price,
+        status="vacant",
+        renter=None,
+        contract=None,
+    )
 
 
 # read
@@ -140,8 +148,18 @@ def update_room(
 
 # delete
 @router.delete("/{room_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_room(room_id: int, db: Session = Depends(get_db)) -> None:
+def delete_room(
+    room_id: int,
+    db: Session = Depends(get_db),
+    _: account_models.Account = Depends(require_admin),
+) -> None:
     db_room = get_room_or_404(room_id, db)
+
+    if db_room.contracts:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Room ini memiliki kontrak, jangan dihapus!",
+        )
 
     db.delete(db_room)
     db.commit()
