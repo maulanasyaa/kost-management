@@ -130,10 +130,12 @@ def get_room(room_id: int, db: Session = Depends(get_db)) -> models.Room:
 
 
 # update
-@router.patch("/{room_id}", response_model=schemas.RoomResponse)
+@router.patch("/{room_id}", response_model=schemas.RoomCardOut)
 def update_room(
     room_id: int, room: schemas.RoomUpdate, db: Session = Depends(get_db)
-) -> models.Room:
+) -> schemas.RoomCardOut:
+    today = date.today()
+
     db_room = get_room_or_404(room_id, db)
 
     update_data = room.model_dump(exclude_unset=True)
@@ -143,7 +145,25 @@ def update_room(
     db.commit()
     db.refresh(db_room)
 
-    return db_room
+    active_contract = next(
+        (c for c in db_room.contracts if c.start_date <= today <= c.end_date), None
+    )
+
+    result = schemas.RoomCardOut(
+        id=db_room.id,
+        room_number=db_room.room_number,
+        room_type=db_room.room_type,
+        price=db_room.price,
+        status="occupied" if active_contract else "vacant",
+        renter=schemas.RenterOut.model_validate(active_contract.renter)
+        if active_contract
+        else None,
+        contract=schemas.ContractOut.model_validate(active_contract)
+        if active_contract
+        else None,
+    )
+
+    return result
 
 
 # delete

@@ -1,5 +1,4 @@
 import { Mail, LockKeyhole, LogIn, ShieldCheck, HousePlus } from "lucide-react";
-import house from "../assets/house.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -55,7 +54,6 @@ function Login() {
             Kelola kamar, penyewa, kontrak, dan transaksi dengan mudah dan
             terorganisir.
           </h2>
-          <img src={house} alt="" className="w-64 opacity-60 mt-4" />
         </div>
 
         {/* Panel kanan - form login */}
