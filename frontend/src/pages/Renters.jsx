@@ -1,8 +1,26 @@
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { Plus, SquarePen, Trash2 } from "lucide-react";
 
 function Renters() {
+  const [renters, setRenters] = useState([]);
+
+  useEffect(() => {
+    async function getRenters() {
+      try {
+        const response = await fetch("/api/renters", {
+          credentials: "include",
+        });
+        const data = await response.json();
+        setRenters(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    getRenters();
+  }, []);
+
   return (
     <div className="flex flex-col h-screen bg-surface overflow-hidden">
       <Navbar />
@@ -29,7 +47,7 @@ function Renters() {
           <div>
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
               <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
+                <thead className="bg-slate-100">
                   <tr>
                     <th className="w-16 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
                       ID
@@ -54,66 +72,45 @@ function Renters() {
                 </thead>
 
                 <tbody className="divide-y divide-slate-100 bg-white">
-                  <tr className="transition-colors hover:bg-slate-50">
-                    <td className="px-6 py-4 text-sm text-slate-700">1</td>
+                  {renters.map((renter) => (
+                    <tr
+                      className="transition-colors hover:bg-slate-50"
+                      key={renter.id}
+                    >
+                      <td className="px-6 py-4 text-sm text-slate-700">
+                        {renter.id}
+                      </td>
 
-                    <td className="px-6 py-4 font-medium text-slate-900">
-                      Maul
-                    </td>
+                      <td className="px-6 py-4 font-medium text-slate-900">
+                        {renter.name}
+                      </td>
 
-                    <td className="px-6 py-4 text-slate-700">089610366447</td>
+                      <td className="px-6 py-4 text-slate-700">
+                        {renter.phone_number}
+                      </td>
 
-                    <td className="px-6 py-4 font-mono text-slate-700">
-                      3215010705020007
-                    </td>
+                      <td className="px-6 py-4 font-mono text-slate-700">
+                        {renter.ktp_number}
+                      </td>
 
-                    <td className="px-6 py-4">
-                      <div className="flex justify-between gap-3">
-                        <div className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer">
-                          <SquarePen className="w-4 h-4" />
-                          <button className="text-sm font-semibold">
-                            Edit
-                          </button>
+                      <td className="px-6 py-4">
+                        <div className="flex justify-between gap-3">
+                          <div className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer">
+                            <SquarePen className="w-4 h-4" />
+                            <button className="text-sm font-semibold">
+                              Edit
+                            </button>
+                          </div>
+                          <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
+                            <Trash2 className="w-4 h-4" />
+                            <button className="text-sm font-semibold">
+                              Delete
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
-                          <Trash2 className="w-4 h-4" />
-                          <button className="text-sm font-semibold">
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="transition-colors hover:bg-slate-50">
-                    <td className="px-6 py-4 text-sm text-slate-700">1</td>
-
-                    <td className="px-6 py-4 font-medium text-slate-900">
-                      Maul
-                    </td>
-
-                    <td className="px-6 py-4 text-slate-700">089610366447</td>
-
-                    <td className="px-6 py-4 font-mono text-slate-700">
-                      3215010705020007
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex justify-between gap-3">
-                        <div className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer">
-                          <SquarePen className="w-4 h-4" />
-                          <button className="text-sm font-semibold">
-                            Edit
-                          </button>
-                        </div>
-                        <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
-                          <Trash2 className="w-4 h-4" />
-                          <button className="text-sm font-semibold">
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
