@@ -42,89 +42,106 @@ function Login() {
   }
 
   return (
-    <div className="bg-surface min-h-screen flex items-center justify-center p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-4xl min-h-150 shadow-[0_32px_80px_rgba(17,45,78,0.15)] rounded-3xl overflow-hidden">
-        <div className="hidden md:flex bg-primary flex-col items-center justify-center gap-6 px-10 py-12 relative">
-          <HousePlus className="text-accent" size={64} />
-          <h1 className="text-4xl font-bold text-center text-surface">
-            <span className="text-accent">Kost </span>
-            Management
-          </h1>
-          <h2 className="w-full max-w-sm text-center text-surface/50">
-            Kelola kamar, penyewa, kontrak, dan transaksi dengan mudah dan
-            terorganisir.
-          </h2>
+    <div className="flex items-center justify-center min-h-screen bg-surface p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-kost overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        {/* Panel Kiri - Branding */}
+        <div className="hidden md:flex flex-col items-center justify-center gap-6 p-12 bg-primary">
+          <HousePlus className="w-16 h-16 text-accent" />
+          <div className="space-y-2 text-center">
+            <h1 className="text-4xl font-bold text-surface">
+              <span className="text-accent">Kost</span> Management
+            </h1>
+            <p className="w-full max-w-sm text-surface/70 leading-relaxed">
+              Kelola kamar, penyewa, kontrak, dan transaksi dengan mudah dan
+              terorganisir.
+            </p>
+          </div>
         </div>
 
-        {/* Panel kanan - form login */}
-        <div className="bg-white flex flex-col items-center justify-center px-6 py-12">
+        {/* Panel Kanan - Form Login */}
+        <div className="flex flex-col justify-center p-8 sm:p-12">
           <form
             onSubmit={handleLogin}
-            className="w-full max-w-sm flex flex-col gap-5"
+            className="w-full max-w-sm mx-auto flex flex-col gap-6"
           >
-            <div className="flex flex-col gap-1">
-              <h1 className="text-3xl font-bold text-primary">Welcome Back</h1>
-              <p className="text-black/50">
+            {/* Header Form */}
+            <div className="flex flex-col gap-1.5">
+              <h2 className="text-3xl font-bold text-primary">Welcome Back</h2>
+              <p className="text-gray-500 text-sm">
                 Login to access your kost management dashboard
               </p>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="font-bold text-primary">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50 w-5 h-5" />
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  autoComplete="email"
-                  required
-                  className="border border-border-soft rounded-md p-2 pl-11 w-full focus:outline-none focus:ring-2 focus:ring-accent"
-                />
+            {/* Input Fields Container */}
+            <div className="flex flex-col gap-4">
+              {/* Email Input */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-semibold text-primary"
+                >
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    autoComplete="email"
+                    required
+                    className="w-full py-2.5 pl-11 pr-4 bg-white border border-border-soft rounded-lg text-primary placeholder:text-gray-400 focus:border-accent transition-colors duration-200"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-semibold text-primary"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <LockKeyhole className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    required
+                    className="w-full py-2.5 pl-11 pr-4 bg-white border border-border-soft rounded-lg text-primary placeholder:text-gray-400 focus:border-accent transition-colors duration-200"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="font-bold text-primary">
-                Password
-              </label>
-              <div className="relative">
-                <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50 w-5 h-5" />
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                  required
-                  className="border border-border-soft rounded-md p-2 pl-11 w-full focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-            </div>
-
+            {/* Error Message */}
             {error && (
-              <p className="text-red-500 text-sm" role="alert">
+              <p className="text-sm text-red-500 font-medium" role="alert">
                 {error}
               </p>
             )}
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center justify-center gap-2 transition duration-300 ease-in-out bg-accent hover:bg-accent-hover disabled:bg-accent/40 disabled:cursor-not-allowed rounded-md p-2 w-full text-white font-medium"
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               <LogIn className="w-5 h-5" />
               {loading ? "Logging in..." : "Login"}
             </button>
 
-            <div className="flex items-center justify-center gap-2">
-              <ShieldCheck className="text-accent w-5 h-5 shrink-0" />
-              <p className="text-black/50 text-center text-sm">
+            {/* Footer info */}
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <ShieldCheck className="w-4 h-4 text-accent" />
+              <p className="text-xs text-gray-400">
                 Your data is secure and protected
               </p>
             </div>

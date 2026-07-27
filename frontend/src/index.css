@@ -6,4 +6,12 @@
   --color-accent-hover: #345D8E;
   --color-border-soft: #DBE2EF;
   --color-surface: #F9F7F7;
+
+  --shadow-kost: 0 32px 80px rgba(17, 45, 78, 0.15);
+}
+
+@layer base {
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-1;
+  }
 }
