@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { Plus, SquarePen, Trash2 } from "lucide-react";
+import { Plus, SquarePen, Trash2, User } from "lucide-react";
+import AddModal from "../components/AddModal";
 
 function Renters() {
   const [renters, setRenters] = useState([]);
+  const [modalAddRenter, setModalAddRenter] = useState(false);
+  const [renterName, setRenterName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [ktpNumber, setKtpNumber] = useState("");
+  console.log(renterName);
 
   useEffect(() => {
     async function getRenters() {
@@ -39,7 +45,14 @@ function Renters() {
                 <Plus className="w-5 h-5" />
               </div>
               <div className="pl-1.5">
-                <button className="font-medium">Add Room</button>
+                <button
+                  className="font-medium"
+                  onClick={() => {
+                    setModalAddRenter(true);
+                  }}
+                >
+                  Add Renter
+                </button>
               </div>
             </div>
           </div>
@@ -117,6 +130,84 @@ function Renters() {
           </div>
         </div>
       </div>
+
+      {/* modal add renter */}
+      {modalAddRenter && (
+        <AddModal page_name="Renter">
+          <form className="space-y-4">
+            {/* Renter Name Input */}
+            <div>
+              <label
+                htmlFor="renterName"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Renter Name
+              </label>
+              <input
+                type="text"
+                id="renterName"
+                value={renterName}
+                onChange={(e) => setRenterName(e.target.value)}
+                placeholder="e.g. John"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+              />
+            </div>
+
+            {/* Phone Number Input */}
+            <div>
+              <label
+                htmlFor="phoneNumber"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Phone Number
+              </label>
+              <input
+                type="text"
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="e.g. 08123456789"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+              />
+            </div>
+
+            {/* KTP Number Input */}
+            <div>
+              <label
+                htmlFor="ktpNumber"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                KTP Number
+              </label>
+              <input
+                type="text"
+                id="ktpNumber"
+                value={ktpNumber}
+                onChange={(e) => setKtpNumber(e.target.value)}
+                placeholder="e.g. 32123456789"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setModalAddRenter(false)}
+                className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Add Renter
+              </button>
+            </div>
+          </form>
+        </AddModal>
+      )}
     </div>
   );
 }
