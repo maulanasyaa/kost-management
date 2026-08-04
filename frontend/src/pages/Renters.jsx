@@ -27,6 +27,40 @@ function Renters() {
     getRenters();
   }, []);
 
+  // function add renter
+  const handleAddRenter = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      name: renterName,
+      phone_number: phoneNumber,
+      ktp_number: ktpNumber,
+    };
+
+    try {
+      const response = await fetch("/api/renters", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setRenters((prevRenters) => [...prevRenters, data]);
+        setRenterName("");
+        setPhoneNumber("");
+        setKtpNumber("");
+        setModalAddRenter(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-surface overflow-hidden">
       <Navbar />
@@ -134,7 +168,7 @@ function Renters() {
       {/* modal add renter */}
       {modalAddRenter && (
         <AddModal page_name="Renter">
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleAddRenter}>
             {/* Renter Name Input */}
             <div>
               <label
