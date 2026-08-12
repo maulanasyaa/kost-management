@@ -14,6 +14,9 @@ function Renters() {
   const [modalAddRenter, setModalAddRenter] = useState(false);
   const [renterToEdit, setRenterToEdit] = useState(null);
 
+  const [renterToDelete, setRenterToDelete] = useState(null);
+  const [error, setError] = useState("");
+
   const PAYLOAD = {
     name: renterName,
     phone_number: phoneNumber,
@@ -104,6 +107,29 @@ function Renters() {
       }
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  // delete renter function
+  const askDeleteConfirmation = (renter) => {
+    setRenterToDelete(renter);
+  };
+
+  const handleDelete = async (renterId) => {
+    try {
+      const response = await fetch(`/api/renters/${renterId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        setRenters((prev) => prev.filter((renter) => renter.id !== renterId));
+      } else {
+        setError("Gagal menghapus room");
+      }
+    } catch (err) {
+      console.log(err);
+      setError("Gagal menghapus room");
     }
   };
 
@@ -199,7 +225,10 @@ function Renters() {
                           </div>
                           <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
                             <Trash2 className="w-4 h-4" />
-                            <button className="text-sm font-semibold">
+                            <button
+                              className="text-sm font-semibold"
+                              onClick={() => askDeleteConfirmation(renter)}
+                            >
                               Delete
                             </button>
                           </div>
@@ -373,6 +402,69 @@ function Renters() {
             </div>
           </form>
         </EditModal>
+      )}
+
+      {/* modal confirmation delete */}
+      {renterToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl ring-1 ring-gray-900/5">
+            {/* Icon & Message Section */}
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                  />
+                </svg>
+              </div>
+
+              <h3
+                id="modal-title"
+                className="text-lg font-semibold text-gray-900"
+              >
+                Delete Room {renterToDelete?.room_number}?
+              </h3>
+              <p className="mt-1.5 text-sm text-gray-500">
+                Are you sure you want to delete this room? This action cannot be
+                undone.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setRenterToDelete(null)}
+                className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleDelete(renterToDelete.id);
+                  setRenterToDelete(null);
+                }}
+                className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

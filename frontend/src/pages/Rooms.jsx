@@ -48,7 +48,6 @@ function Rooms() {
       if (response.ok) {
         setRooms((prev) => prev.filter((room) => room.id !== roomId));
       } else {
-        console.log(roomId);
         setError("Gagal menghapus room");
       }
     } catch (err) {
