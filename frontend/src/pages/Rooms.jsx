@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import RoomCard from "../components/RoomCard";
 import { useEffect, useState } from "react";
 import AddModal from "../components/AddModal";
+import EditModal from "../components/EditModal";
 
 function Rooms() {
   const [rooms, setRooms] = useState([]);
@@ -47,7 +48,6 @@ function Rooms() {
       if (response.ok) {
         setRooms((prev) => prev.filter((room) => room.id !== roomId));
       } else {
-        console.log(roomId);
         setError("Gagal menghapus room");
       }
     } catch (err) {
@@ -307,125 +307,108 @@ function Rooms() {
 
       {/* modal edit room */}
       {roomToEdit && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-        >
-          {/* Modal Container: Diperbesar sedikit (max-w-md) dengan shadow dan border radius yang lebih modern */}
-          <div className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5 animate-in zoom-in-95 duration-200">
-            {/* Header Section */}
-            <div className="mb-6">
-              <h3
-                id="modal-title"
-                className="text-lg font-semibold text-gray-900"
+        <EditModal page_name="Room">
+          <form onSubmit={handleEdit} className="space-y-4">
+            {/* Room Number Input */}
+            <div>
+              <label
+                htmlFor="roomNumber"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Edit Room
-              </h3>
-              <p className="mt-1.5 text-sm text-gray-500">
-                Update the details below to modify the room information.
-              </p>
+                Room Number
+              </label>
+              <input
+                type="text"
+                id="roomNumber"
+                value={roomNumber}
+                onChange={(e) => setRoomNumber(e.target.value)}
+                placeholder="e.g. 101"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+              />
             </div>
 
-            {/* Form Section: Menggunakan space-y-4 agar jarak antar elemen konsisten tanpa flex-col manual */}
-            <form onSubmit={handleEdit} className="space-y-4">
-              {/* Room Number Input */}
-              <div>
-                <label
-                  htmlFor="roomNumber"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
+            {/* Room Type Select */}
+            <div>
+              <label
+                htmlFor="roomType"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Room Type
+              </label>
+              <div className="relative">
+                <select
+                  id="roomType"
+                  value={roomType}
+                  onChange={(e) => setRoomType(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
-                  Room Number
-                </label>
-                <input
-                  type="text"
-                  id="roomNumber"
-                  value={roomNumber}
-                  onChange={(e) => setRoomNumber(e.target.value)}
-                  placeholder="e.g. 101"
-                  className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
-                />
-              </div>
-
-              {/* Room Type Select */}
-              <div>
-                <label
-                  htmlFor="roomType"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
-                >
-                  Room Type
-                </label>
-                <div className="relative">
-                  <select
-                    id="roomType"
-                    value={roomType}
-                    onChange={(e) => setRoomType(e.target.value)}
-                    className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                  <option value="" disabled hidden>
+                    -- Select Room Type --
+                  </option>
+                  <option value="standard">Standard</option>
+                  <option value="deluxe">Deluxe</option>
+                  <option value="vip">VIP</option>
+                </select>
+                {/* Custom Arrow Icon */}
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <option value="" disabled hidden>
-                      -- Select Room Type --
-                    </option>
-                    <option value="standard">Standard</option>
-                    <option value="deluxe">Deluxe</option>
-                    <option value="vip">VIP</option>
-                  </select>
-                  {/* Custom Arrow Icon */}
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
               </div>
+            </div>
 
-              {/* Price Input */}
-              <div>
-                <label
-                  htmlFor="price"
-                  className="mb-1.5 block text-sm font-medium text-gray-700"
-                >
-                  Price
-                </label>
-                <input
-                  type="number"
-                  id="price"
-                  value={roomPrice}
-                  onChange={(e) => setRoomPrice(e.target.value)}
-                  placeholder="e.g. 250000"
-                  className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                />
-              </div>
+            {/* Price Input */}
+            <div>
+              <label
+                htmlFor="price"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Price
+              </label>
+              <input
+                type="number"
+                id="price"
+                value={roomPrice}
+                onChange={(e) => setRoomPrice(e.target.value)}
+                placeholder="e.g. 250000"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
 
-              {/* Action Buttons */}
-              <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <button
-                  type="button"
-                  onClick={() => setRoomToEdit(null)}
-                  className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setRoomToEdit(null);
+                  setRoomNumber("");
+                  setRoomType("standard");
+                  setRoomPrice("");
+                }}
+                className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </EditModal>
       )}
 
       {/* modal confirmation delete */}
