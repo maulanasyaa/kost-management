@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Rooms from "./pages/Rooms";
 import Renters from "./pages/Renters";
+import Contracts from "./pages/Contracts";
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Renters></Renters>
+          </ProtectedRoute>
+        }
+      ></Route>
+      <Route
+        path="/contracts"
+        element={
+          <ProtectedRoute>
+            <Contracts></Contracts>
           </ProtectedRoute>
         }
       ></Route>

@@ -162,6 +162,7 @@ function Renters() {
               </div>
             </div>
           </div>
+
           {/* content */}
           <div>
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
