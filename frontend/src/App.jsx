@@ -1,10 +1,10 @@
-import { Route, Routes } from "react-router-dom";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Rooms from "./pages/Rooms";
-import Renters from "./pages/Renters";
-import Contracts from "./pages/Contracts";
+import { Route, Routes } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import Rooms from './pages/Rooms';
+import Renters from './pages/Renters';
+import Contracts from './pages/Contracts';
 
 function App() {
   return (

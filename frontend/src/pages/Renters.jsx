@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
-import { Plus, SquarePen, Trash2 } from "lucide-react";
-import AddModal from "../components/AddModal";
-import EditModal from "../components/EditModal";
+import { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
+import { Plus, SquarePen, Trash2 } from 'lucide-react';
+import AddModal from '../components/AddModal';
+import EditModal from '../components/EditModal';
 
 function Renters() {
   const [renters, setRenters] = useState([]);
-  const [renterName, setRenterName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [ktpNumber, setKtpNumber] = useState("");
+  const [renterName, setRenterName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [ktpNumber, setKtpNumber] = useState('');
 
   const [modalAddRenter, setModalAddRenter] = useState(false);
   const [renterToEdit, setRenterToEdit] = useState(null);
 
   const [renterToDelete, setRenterToDelete] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const PAYLOAD = {
     name: renterName,
@@ -26,8 +26,8 @@ function Renters() {
   useEffect(() => {
     async function getRenters() {
       try {
-        const response = await fetch("/api/renters", {
-          credentials: "include",
+        const response = await fetch('/api/renters', {
+          credentials: 'include',
         });
         const data = await response.json();
         setRenters(data);
@@ -45,22 +45,22 @@ function Renters() {
     const payload = PAYLOAD;
 
     try {
-      const response = await fetch("/api/renters", {
-        method: "POST",
+      const response = await fetch('/api/renters', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
 
         setRenters((prevRenters) => [...prevRenters, data]);
-        setRenterName("");
-        setPhoneNumber("");
-        setKtpNumber("");
+        setRenterName('');
+        setPhoneNumber('');
+        setKtpNumber('');
         setModalAddRenter(false);
       }
     } catch (err) {
@@ -83,25 +83,25 @@ function Renters() {
 
     try {
       const response = await fetch(`/api/renters/${renterToEdit.id}`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
         setRenters((prevRenters) => {
           return prevRenters.map((renter) =>
-            renter.id === renterToEdit.id ? data : renter,
+            renter.id === renterToEdit.id ? data : renter
           );
         });
 
-        setRenterName("");
-        setPhoneNumber("");
-        setKtpNumber("");
+        setRenterName('');
+        setPhoneNumber('');
+        setKtpNumber('');
 
         setRenterToEdit(null);
       }
@@ -118,18 +118,18 @@ function Renters() {
   const handleDelete = async (renterId) => {
     try {
       const response = await fetch(`/api/renters/${renterId}`, {
-        method: "DELETE",
-        credentials: "include",
+        method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
         setRenters((prev) => prev.filter((renter) => renter.id !== renterId));
       } else {
-        setError("Gagal menghapus room");
+        setError('Gagal menghapus room');
       }
     } catch (err) {
       console.log(err);
-      setError("Gagal menghapus room");
+      setError('Gagal menghapus room');
     }
   };
 
@@ -386,9 +386,9 @@ function Renters() {
                 type="button"
                 onClick={() => {
                   setRenterToEdit(null);
-                  setRenterName("");
-                  setPhoneNumber("");
-                  setKtpNumber("");
+                  setRenterName('');
+                  setPhoneNumber('');
+                  setKtpNumber('');
                 }}
                 className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
               >

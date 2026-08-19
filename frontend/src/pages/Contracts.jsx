@@ -1,17 +1,19 @@
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
-import { Plus, Trash2, SquarePen } from "lucide-react";
-import { useEffect, useState } from "react";
+import Sidebar from '../components/Sidebar';
+import Navbar from '../components/Navbar';
+import { Plus, Trash2, SquarePen } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import AddModal from '../components/AddModal';
 
 function Contracts() {
   const [contracts, setContracts] = useState([]);
+  const [modalAddContract, setModalAddContract] = useState(true);
 
   useEffect(() => {
     const getContracts = async () => {
       try {
-        const response = await fetch("/api/contracts", {
-          method: "GET",
-          credentials: "include",
+        const response = await fetch('/api/contracts', {
+          method: 'GET',
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -27,6 +29,10 @@ function Contracts() {
 
     getContracts();
   }, []);
+
+  const handleAddRenter = () => {
+    return null;
+  };
 
   return (
     <div className="flex flex-col h-screen bg-surface overflow-hidden">
@@ -159,6 +165,163 @@ function Contracts() {
           </div>
         </div>
       </div>
+
+      {/* modal add contract, besok lanjutin ini */}
+      {modalAddContract && (
+        <AddModal page_name="Contract">
+          <form className="space-y-4" onSubmit={handleAddRenter}>
+            {/* room dropdown */}
+            <div>
+              <label
+                htmlFor="roomList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Room
+              </label>
+              <div className="relative">
+                <select
+                  id="roomList"
+                  // value={}
+                  // onChange={}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Room--
+                  </option>
+                  <option>room 1</option>
+                  <option>room 2</option>
+                  <option>room 3</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* renter dropdown */}
+            <div>
+              <label
+                htmlFor="renterList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Room
+              </label>
+              <div className="relative">
+                <select
+                  id="renterList"
+                  // value={}
+                  // onChange={}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Renter--
+                  </option>
+                  <option>renter 1</option>
+                  <option>renter 2</option>
+                  <option>renter 3</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Term Input */}
+            <div>
+              <label
+                htmlFor="term"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Term
+              </label>
+              <input
+                type="number"
+                id="term"
+                // value={phoneNumber}
+                // onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="e.g. 6"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+              />
+            </div>
+
+            {/* Price Input */}
+            <div>
+              <label
+                htmlFor="roomPrice"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Price
+              </label>
+              <input
+                type="text"
+                id="roomPrice"
+                // value={roomPrice}
+                // onChange={(e) => setRoomPrice(e.target.value)}
+                placeholder="e.g. 1000000"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+
+            {/* Start Date Input */}
+            <div>
+              <label
+                htmlFor="startDate"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Start Date
+              </label>
+              <input
+                type="date"
+                id="startDate"
+                // value={startDate}
+                // onChange={(e) => setStartDate(e.target.value)}
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                // onClick={() => setModalAddRenter(false)}
+                className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Add Contract
+              </button>
+            </div>
+          </form>
+        </AddModal>
+      )}
     </div>
   );
 }

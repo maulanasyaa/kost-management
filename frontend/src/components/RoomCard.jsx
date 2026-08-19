@@ -4,7 +4,7 @@ import {
   Tags,
   SquarePen,
   Trash2,
-} from "lucide-react";
+} from 'lucide-react';
 
 function RoomCard({
   onEdit,
@@ -27,9 +27,9 @@ function RoomCard({
         </div>
         <p
           className={
-            status === "occupied"
-              ? "bg-emerald-100 text-emerald-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider"
-              : "bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider"
+            status === 'occupied'
+              ? 'bg-emerald-100 text-emerald-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider'
+              : 'bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider'
           }
         >
           {status}
@@ -44,7 +44,7 @@ function RoomCard({
           <div className="flex items-center gap-3">
             <UserRoundKey className="w-5 h-5 text-accent" />
             <p className="text-gray-800 font-medium text-sm">
-              {renter ? renter.name : "-"}
+              {renter ? renter.name : '-'}
             </p>
           </div>
         </div>
@@ -56,7 +56,7 @@ function RoomCard({
           <div className="flex items-center gap-3">
             <CalendarRange className="w-5 h-5 text-accent" />
             <p className="text-gray-800 font-medium text-sm">
-              {contract ? `${contract.start_date} - ${contract.end_date}` : "-"}
+              {contract ? `${contract.start_date} - ${contract.end_date}` : '-'}
             </p>
           </div>
         </div>
@@ -68,7 +68,7 @@ function RoomCard({
           <div className="flex items-center gap-3">
             <Tags className="w-5 h-5 text-accent" />
             <div className="text-primary font-bold flex items-baseline gap-1 text-lg">
-              {price}{" "}
+              {price}{' '}
               <p className="text-xs font-medium text-gray-500">/ month</p>
             </div>
           </div>

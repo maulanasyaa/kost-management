@@ -1,4 +1,4 @@
-import { HousePlus, LogOut } from "lucide-react";
+import { HousePlus, LogOut } from 'lucide-react';
 
 function Navbar() {
   return (

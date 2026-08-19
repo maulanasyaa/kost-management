@@ -13,7 +13,7 @@ function EditModal({ page_name, children }) {
             Edit {page_name}
           </h3>
           <p className="mt-1.5 text-sm text-gray-500">
-            Update the details below to modify the {page_name.toLowerCase()}{" "}
+            Update the details below to modify the {page_name.toLowerCase()}{' '}
             information.
           </p>
         </div>

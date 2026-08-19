@@ -4,15 +4,15 @@ import {
   UserRoundKey,
   Scroll,
   BanknoteArrowDown,
-} from "lucide-react";
-import { NavLink } from "react-router-dom";
+} from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 function Sidebar() {
   const navLinkClass = ({ isActive }) =>
     `p-3 rounded-md flex items-center gap-2 w-full transition-colors ${
       isActive
-        ? "bg-white text-primary font-medium" // styling saat halaman aktif
-        : "text-surface/70 hover:bg-white/10 hover:text-surface" // styling saat halaman tidak aktif
+        ? 'bg-white text-primary font-medium' // styling saat halaman aktif
+        : 'text-surface/70 hover:bg-white/10 hover:text-surface' // styling saat halaman tidak aktif
     }`;
 
   return (

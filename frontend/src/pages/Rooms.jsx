@@ -1,10 +1,10 @@
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
-import { Plus } from "lucide-react";
-import RoomCard from "../components/RoomCard";
-import { useEffect, useState } from "react";
-import AddModal from "../components/AddModal";
-import EditModal from "../components/EditModal";
+import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
+import { Plus } from 'lucide-react';
+import RoomCard from '../components/RoomCard';
+import { useEffect, useState } from 'react';
+import AddModal from '../components/AddModal';
+import EditModal from '../components/EditModal';
 
 function Rooms() {
   const [rooms, setRooms] = useState([]);
@@ -15,21 +15,21 @@ function Rooms() {
   const [roomToEdit, setRoomToEdit] = useState(null);
 
   // state value for create room
-  const [roomNumber, setRoomNumber] = useState("");
-  const [roomType, setRoomType] = useState("standard");
-  const [roomPrice, setRoomPrice] = useState("");
+  const [roomNumber, setRoomNumber] = useState('');
+  const [roomType, setRoomType] = useState('standard');
+  const [roomPrice, setRoomPrice] = useState('');
 
   useEffect(() => {
     async function getRooms() {
       try {
-        const response = await fetch("/api/rooms/summary", {
-          credentials: "include",
+        const response = await fetch('/api/rooms/summary', {
+          credentials: 'include',
         });
         const data = await response.json();
         setRooms(data);
       } catch (err) {
         console.error(err);
-        setError("Gagal memuat data rooms");
+        setError('Gagal memuat data rooms');
       } finally {
         setLoading(false);
       }
@@ -41,18 +41,18 @@ function Rooms() {
   async function handleDelete(roomId) {
     try {
       const response = await fetch(`/api/rooms/${roomId}`, {
-        credentials: "include",
-        method: "DELETE",
+        credentials: 'include',
+        method: 'DELETE',
       });
 
       if (response.ok) {
         setRooms((prev) => prev.filter((room) => room.id !== roomId));
       } else {
-        setError("Gagal menghapus room");
+        setError('Gagal menghapus room');
       }
     } catch (err) {
       console.log(err);
-      setError("Gagal menghapus room");
+      setError('Gagal menghapus room');
     }
   }
 
@@ -74,7 +74,7 @@ function Rooms() {
     e.preventDefault();
 
     if (!roomPrice || isNaN(roomPrice)) {
-      alert("Please enter a valid price");
+      alert('Please enter a valid price');
       return;
     }
 
@@ -85,28 +85,28 @@ function Rooms() {
     };
 
     try {
-      const response = await fetch("/api/rooms", {
-        method: "POST",
+      const response = await fetch('/api/rooms', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
 
         setRooms((prevRooms) => [...prevRooms, data]);
-        setRoomNumber("");
-        setRoomType("standard");
-        setRoomPrice("");
+        setRoomNumber('');
+        setRoomType('standard');
+        setRoomPrice('');
 
         setModalAddRoom(false);
       }
     } catch (err) {
       console.error(err);
-      setError("Tidak bisa terhubung ke server, coba lagi");
+      setError('Tidak bisa terhubung ke server, coba lagi');
     }
   };
 
@@ -122,30 +122,30 @@ function Rooms() {
 
     try {
       const response = await fetch(`/api/rooms/${roomToEdit.id}`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
         setRooms((prevRooms) => {
           return prevRooms.map((room) =>
-            room.id === roomToEdit.id ? data : room,
+            room.id === roomToEdit.id ? data : room
           );
         });
-        setRoomNumber("");
-        setRoomType("standard");
-        setRoomPrice("");
+        setRoomNumber('');
+        setRoomType('standard');
+        setRoomPrice('');
 
         setRoomToEdit(null);
       }
     } catch (err) {
       console.error(err);
-      setError("Tidak bisa terhubung ke server, coba lagi");
+      setError('Tidak bisa terhubung ke server, coba lagi');
     }
   };
 
@@ -392,9 +392,9 @@ function Rooms() {
                 type="button"
                 onClick={() => {
                   setRoomToEdit(null);
-                  setRoomNumber("");
-                  setRoomType("standard");
-                  setRoomPrice("");
+                  setRoomNumber('');
+                  setRoomType('standard');
+                  setRoomPrice('');
                 }}
                 className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
               >

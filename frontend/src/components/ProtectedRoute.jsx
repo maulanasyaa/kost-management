@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
 function ProtectedRoute({ children }) {
   const [authenticated, setAuthenticated] = useState(false);
@@ -7,8 +7,8 @@ function ProtectedRoute({ children }) {
 
   useEffect(() => {
     async function checkAuth() {
-      const response = await fetch("http://localhost:8000/accounts/me", {
-        credentials: "include",
+      const response = await fetch('http://localhost:8000/accounts/me', {
+        credentials: 'include',
       });
       if (response.ok) {
         setAuthenticated(true);

@@ -1,41 +1,41 @@
-import { Mail, LockKeyhole, LogIn, ShieldCheck, HousePlus } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Mail, LockKeyhole, LogIn, ShieldCheck, HousePlus } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   async function handleLogin(e) {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
 
     try {
-      const response = await fetch("/api/accounts/login", {
-        method: "POST",
+      const response = await fetch('/api/accounts/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
+        credentials: 'include',
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.detail || "Email atau password salah");
+        setError(data.detail || 'Email atau password salah');
         return;
       }
 
-      navigate("/dashboard");
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      setError("Tidak bisa terhubung ke server, coba lagi");
+      setError('Tidak bisa terhubung ke server, coba lagi');
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,7 @@ function Login() {
               className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-accent hover:bg-accent-hover text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               <LogIn className="w-5 h-5" />
-              {loading ? "Logging in..." : "Login"}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
 
             {/* Footer info */}
