@@ -8,6 +8,17 @@ function Contracts() {
   const [contracts, setContracts] = useState([]);
   const [modalAddContract, setModalAddContract] = useState(true);
 
+  const [rooms, setRooms] = useState([]);
+
+  const [renters, setRenters] = useState([]);
+
+  // value for modal
+  const [roomNumber, setRoomNumber] = useState('');
+  const [renterName, setRenterName] = useState('');
+  const [term, setTerm] = useState();
+  const [roomPrice, setRoomPrice] = useState();
+  const [startDate, setStartDate] = useState();
+
   useEffect(() => {
     const getContracts = async () => {
       try {
@@ -27,7 +38,45 @@ function Contracts() {
       }
     };
 
+    const getRooms = async () => {
+      try {
+        const response = await fetch('/api/rooms', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setRooms(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const getRenters = async () => {
+      try {
+        const response = await fetch('/api/renters', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setRenters(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     getContracts();
+    getRooms();
+    getRenters();
   }, []);
 
   const handleAddRenter = () => {
@@ -61,7 +110,8 @@ function Contracts() {
               </div>
             </div>
           </div>
-          {/* content */}
+
+          {/* content card */}
           <div>
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
               <table className="min-w-full divide-y divide-slate-200">
@@ -166,7 +216,7 @@ function Contracts() {
         </div>
       </div>
 
-      {/* modal add contract, besok lanjutin ini */}
+      {/* modal add contract */}
       {modalAddContract && (
         <AddModal page_name="Contract">
           <form className="space-y-4" onSubmit={handleAddRenter}>
@@ -181,16 +231,16 @@ function Contracts() {
               <div className="relative">
                 <select
                   id="roomList"
-                  // value={}
-                  // onChange={}
+                  value={roomNumber}
+                  onChange={(e) => setRoomNumber(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
                     -- Select Room--
                   </option>
-                  <option>room 1</option>
-                  <option>room 2</option>
-                  <option>room 3</option>
+                  {rooms.map((room) => (
+                    <option key={room.id}>Room {room.room_number}</option>
+                  ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                   <svg
@@ -216,21 +266,21 @@ function Contracts() {
                 htmlFor="renterList"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Room
+                Renter
               </label>
               <div className="relative">
                 <select
                   id="renterList"
-                  // value={}
-                  // onChange={}
+                  value={renterName}
+                  onChange={(e) => setRenterName(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
                     -- Select Renter--
                   </option>
-                  <option>renter 1</option>
-                  <option>renter 2</option>
-                  <option>renter 3</option>
+                  {renters.map((renter) => (
+                    <option key={renter.id}>{renter.name}</option>
+                  ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                   <svg
@@ -261,8 +311,8 @@ function Contracts() {
               <input
                 type="number"
                 id="term"
-                // value={phoneNumber}
-                // onChange={(e) => setPhoneNumber(e.target.value)}
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
                 placeholder="e.g. 6"
                 className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
               />
@@ -279,8 +329,8 @@ function Contracts() {
               <input
                 type="text"
                 id="roomPrice"
-                // value={roomPrice}
-                // onChange={(e) => setRoomPrice(e.target.value)}
+                value={roomPrice}
+                onChange={(e) => setRoomPrice(e.target.value)}
                 placeholder="e.g. 1000000"
                 className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
@@ -295,10 +345,15 @@ function Contracts() {
                 Start Date
               </label>
               <input
-                type="date"
+                type="text"
+                placeholder="Choose start date"
+                onFocus={(e) => (e.target.type = 'date')}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = 'text';
+                }}
                 id="startDate"
-                // value={startDate}
-                // onChange={(e) => setStartDate(e.target.value)}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
                 className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
               />
             </div>
