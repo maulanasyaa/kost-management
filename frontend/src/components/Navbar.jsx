@@ -2,7 +2,7 @@ import { HousePlus, LogOut } from 'lucide-react';
 
 function Navbar() {
   return (
-    <nav className="bg-primary w-full h-16 flex items-center justify-between px-6 shrink-0">
+    <nav className="bg-primary w-full+1 h-16 flex items-center justify-between px-6 shrink-0 rounded-2xl m-3 shadow-[0_4px_12px_rgba(15,23,42,0.22)]">
       <div className="flex items-center gap-2">
         <HousePlus className="text-accent w-6 h-6" />
         <h1 className="font-bold text-xl text-surface">Kost Management</h1>

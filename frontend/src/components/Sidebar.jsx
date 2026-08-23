@@ -16,7 +16,7 @@ function Sidebar() {
     }`;
 
   return (
-    <div className="bg-primary w-52 shrink-0 min-h-screen">
+    <div className="bg-primary w-52 shrink-0 min-h-screen+1 m-3 rounded-2xl shadow-[4px_0_12px_rgba(15,23,42,0.22)]">
       <nav className="p-6">
         <ul className="flex flex-col gap-2">
           <li>
