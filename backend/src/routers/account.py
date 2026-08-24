@@ -23,7 +23,7 @@ if not SECRET_JWT:
     raise ValueError("SECRET_JWT is missing from environment variables")
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 # utils

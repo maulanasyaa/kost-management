@@ -6,18 +6,18 @@ import AddModal from '../components/AddModal';
 
 function Contracts() {
   const [contracts, setContracts] = useState([]);
-  const [modalAddContract, setModalAddContract] = useState(true);
+  const [modalAddContract, setModalAddContract] = useState(false);
 
   const [rooms, setRooms] = useState([]);
 
   const [renters, setRenters] = useState([]);
 
   // value for modal
-  const [roomNumber, setRoomNumber] = useState('');
-  const [renterName, setRenterName] = useState('');
-  const [term, setTerm] = useState();
-  const [roomPrice, setRoomPrice] = useState();
-  const [startDate, setStartDate] = useState();
+  const [roomID, setRoomID] = useState('');
+  const [renterID, setRenterID] = useState('');
+  const [term, setTerm] = useState('');
+  const [roomPrice, setRoomPrice] = useState('');
+  const [startDate, setStartDate] = useState('');
 
   useEffect(() => {
     const getContracts = async () => {
@@ -74,13 +74,49 @@ function Contracts() {
       }
     };
 
-    getContracts();
-    getRooms();
-    getRenters();
+    getContracts('');
+    getRooms('');
+    getRenters('');
   }, []);
 
-  const handleAddRenter = () => {
-    return null;
+  // add contract function
+  const handleAddContract = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      room_id: roomID,
+      renter_id: renterID,
+      term: term,
+      price: roomPrice,
+      start_date: startDate,
+    };
+
+    try {
+      const response = await fetch('/api/contracts', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setContracts((prevContracts) => [...prevContracts, data]);
+      setRoomID('');
+      setRenterID('');
+      setTerm();
+      setRoomPrice();
+      setStartDate();
+
+      setModalAddContract(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -103,7 +139,7 @@ function Contracts() {
               <div className="pl-1.5">
                 <button
                   className="font-medium"
-                  //   onClick={() => ()}
+                  onClick={() => setModalAddContract(true)}
                 >
                   Add Contract
                 </button>
@@ -219,7 +255,7 @@ function Contracts() {
       {/* modal add contract */}
       {modalAddContract && (
         <AddModal page_name="Contract">
-          <form className="space-y-4" onSubmit={handleAddRenter}>
+          <form className="space-y-4" onSubmit={handleAddContract}>
             {/* room dropdown */}
             <div>
               <label
@@ -231,15 +267,17 @@ function Contracts() {
               <div className="relative">
                 <select
                   id="roomList"
-                  value={roomNumber}
-                  onChange={(e) => setRoomNumber(e.target.value)}
+                  value={roomID}
+                  onChange={(e) => setRoomID(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
                     -- Select Room--
                   </option>
                   {rooms.map((room) => (
-                    <option key={room.id}>Room {room.room_number}</option>
+                    <option key={room.id} value={room.id}>
+                      Room {room.room_number}
+                    </option>
                   ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
@@ -271,15 +309,17 @@ function Contracts() {
               <div className="relative">
                 <select
                   id="renterList"
-                  value={renterName}
-                  onChange={(e) => setRenterName(e.target.value)}
+                  value={renterID}
+                  onChange={(e) => setRenterID(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
                     -- Select Renter--
                   </option>
                   {renters.map((renter) => (
-                    <option key={renter.id}>{renter.name}</option>
+                    <option key={renter.id} value={renter.id}>
+                      {renter.name}
+                    </option>
                   ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
@@ -345,12 +385,8 @@ function Contracts() {
                 Start Date
               </label>
               <input
-                type="text"
+                type="date"
                 placeholder="Choose start date"
-                onFocus={(e) => (e.target.type = 'date')}
-                onBlur={(e) => {
-                  if (!e.target.value) e.target.type = 'text';
-                }}
                 id="startDate"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
@@ -362,7 +398,7 @@ function Contracts() {
             <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                // onClick={() => setModalAddRenter(false)}
+                onClick={() => setModalAddContract(false)}
                 className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
               >
                 Cancel
