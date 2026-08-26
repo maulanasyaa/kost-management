@@ -13,7 +13,7 @@
 }
 
 @utility page-card {
-  @apply bg-surface m-5 rounded-2xl shadow-floating;
+  @apply bg-surface mx-3 my-5 rounded-2xl shadow-floating;
 }
 
 @layer base {
