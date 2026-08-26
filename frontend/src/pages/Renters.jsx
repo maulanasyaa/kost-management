@@ -138,8 +138,8 @@ function Renters() {
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <div className="flex-1 p-8 pb-12 overflow-y-auto">
-          <div className="flex justify-between w-full items-end mb-8">
+        <div className="flex flex-col flex-1 p-8 pb-12 overflow-hidden page-card">
+          <div className="flex justify-between w-full items-center mb-6 bg-surface shadow-sm p-4 rounded-xl shrink-0">
             <div>
               <h1 className="font-bold text-3xl text-primary">Renters</h1>
               <h3 className="text-gray-500 pt-1 text-sm">
@@ -164,7 +164,7 @@ function Renters() {
           </div>
 
           {/* content */}
-          <div>
+          <div className="flex-1 overflow-y-auto pr-2">
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-100">

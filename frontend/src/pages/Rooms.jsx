@@ -2,7 +2,7 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { Plus } from 'lucide-react';
 import RoomCard from '../components/RoomCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import AddModal from '../components/AddModal';
 import EditModal from '../components/EditModal';
 
@@ -154,8 +154,8 @@ function Rooms() {
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <div className="flex-1 p-8 pb-12 overflow-y-auto">
-          <div className="flex justify-between w-full items-end mb-8">
+        <div className="flex flex-col flex-1 p-8 pb-12 overflow-hidden page-card">
+          <div className="flex justify-between w-full items-center mb-6 bg-surface shadow-sm p-4 rounded-xl shrink-0">
             <div>
               <h1 className="font-bold text-3xl text-primary">Rooms</h1>
               <h3 className="text-gray-500 pt-1 text-sm">
@@ -177,30 +177,32 @@ function Rooms() {
             </div>
           </div>
 
-          {loading && (
-            <p className="text-gray-500 text-sm">Memuat data rooms...</p>
-          )}
+          <div className="flex-1 overflow-y-auto pr-2">
+            {loading && (
+              <p className="text-gray-500 text-sm">Memuat data rooms...</p>
+            )}
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          {!loading && !error && (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {rooms.map((room) => (
-                <RoomCard
-                  key={room.id}
-                  id={room.id}
-                  onEdit={() => askEditConfirmation(room)}
-                  onDelete={() => askDeleteConfirmation(room)}
-                  room_number={room.room_number}
-                  room_type={room.room_type}
-                  price={room.price}
-                  renter={room.renter}
-                  contract={room.contract}
-                  status={room.status}
-                />
-              ))}
-            </div>
-          )}
+            {!loading && !error && (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {rooms.map((room) => (
+                  <RoomCard
+                    key={room.id}
+                    id={room.id}
+                    onEdit={() => askEditConfirmation(room)}
+                    onDelete={() => askDeleteConfirmation(room)}
+                    room_number={room.room_number}
+                    room_type={room.room_type}
+                    price={room.price}
+                    renter={room.renter}
+                    contract={room.contract}
+                    status={room.status}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

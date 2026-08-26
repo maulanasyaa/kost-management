@@ -8,6 +8,12 @@
   --color-surface: #f9f7f7;
 
   --shadow-kost: 0 32px 80px rgba(17, 45, 78, 0.15);
+  --shadow-floating:
+    0 8px 30px rgba(15, 23, 42, 0.1), 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+@utility page-card {
+  @apply bg-surface m-5 rounded-2xl shadow-floating;
 }
 
 @layer base {
