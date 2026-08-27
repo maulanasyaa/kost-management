@@ -110,7 +110,7 @@ def get_contract(contract_id: int, db: Session = Depends(get_db)) -> models.Cont
 
 
 # update
-@router.patch("/{contract_id}", response_model=schemas.ContractResponse)
+@router.patch("/{contract_id}", response_model=schemas.ContractCardOut)
 def update_contract(
     contract_id: int, contract: schemas.ContractUpdate, db: Session = Depends(get_db)
 ) -> models.Contract:

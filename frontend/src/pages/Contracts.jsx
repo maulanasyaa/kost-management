@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import { Plus, Trash2, SquarePen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddModal from '../components/AddModal';
+import EditModal from '../components/EditModal';
 
 function Contracts() {
   const [contracts, setContracts] = useState([]);
@@ -11,6 +12,8 @@ function Contracts() {
   const [rooms, setRooms] = useState([]);
 
   const [renters, setRenters] = useState([]);
+
+  const [contractToEdit, setContractToEdit] = useState(null);
 
   // value for modal
   const [roomID, setRoomID] = useState('');
@@ -114,6 +117,57 @@ function Contracts() {
       setStartDate();
 
       setModalAddContract(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const askEditConfirmation = (contract) => {
+    setContractToEdit(contract.id);
+    setRoomID(contract.room.id);
+    setRenterID(contract.renter.id);
+    setTerm(contract.term);
+    setRoomPrice(contract.price);
+    setStartDate(contract.start_date);
+  };
+
+  const handleEditContract = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      room_id: roomID,
+      renter_id: renterID,
+      term: term,
+      price: roomPrice,
+      start_date: startDate,
+    };
+
+    try {
+      const response = await fetch(`/api/contracts/${contractToEdit}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setContracts((prevContracts) =>
+        prevContracts.map((contract) =>
+          contract.id == contractToEdit ? data : contract
+        )
+      );
+      setContractToEdit('');
+      setRoomID('');
+      setRenterID('');
+      setTerm('');
+      setRoomPrice('');
+      setStartDate('');
     } catch (err) {
       console.error(err);
     }
@@ -227,7 +281,7 @@ function Contracts() {
                             <SquarePen className="w-4 h-4" />
                             <button
                               className="text-sm font-semibold"
-                              // onClick={() => askEditConfirmation(renter)}
+                              onClick={() => askEditConfirmation(contract)}
                             >
                               Edit
                             </button>
@@ -412,6 +466,167 @@ function Contracts() {
             </div>
           </form>
         </AddModal>
+      )}
+
+      {contractToEdit && (
+        <EditModal page_name="Room">
+          <form className="space-y-4" onSubmit={handleEditContract}>
+            {/* room dropdown */}
+            <div>
+              <label
+                htmlFor="roomList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Room
+              </label>
+              <div className="relative">
+                <select
+                  id="roomList"
+                  value={roomID}
+                  onChange={(e) => setRoomID(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Room--
+                  </option>
+                  {rooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      Room {room.room_number}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* renter dropdown */}
+            <div>
+              <label
+                htmlFor="renterList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Renter
+              </label>
+              <div className="relative">
+                <select
+                  id="renterList"
+                  value={renterID}
+                  onChange={(e) => setRenterID(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Renter--
+                  </option>
+                  {renters.map((renter) => (
+                    <option key={renter.id} value={renter.id}>
+                      {renter.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Term Input */}
+            <div>
+              <label
+                htmlFor="term"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Term
+              </label>
+              <input
+                type="number"
+                id="term"
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
+                placeholder="e.g. 6"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+              />
+            </div>
+
+            {/* Price Input */}
+            <div>
+              <label
+                htmlFor="roomPrice"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Price
+              </label>
+              <input
+                type="text"
+                id="roomPrice"
+                value={roomPrice}
+                onChange={(e) => setRoomPrice(e.target.value)}
+                placeholder="e.g. 1000000"
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+
+            {/* Start Date Input */}
+            <div>
+              <label
+                htmlFor="startDate"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Start Date
+              </label>
+              <input
+                type="date"
+                placeholder="Choose start date"
+                id="startDate"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setContractToEdit('')}
+                className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Edit Contract
+              </button>
+            </div>
+          </form>
+        </EditModal>
       )}
     </div>
   );
