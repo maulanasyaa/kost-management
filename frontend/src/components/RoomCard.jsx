@@ -76,18 +76,23 @@ function RoomCard({
       </div>
 
       <div className="flex justify-between gap-3 mt-2 pt-4 border-t border-border-soft">
-        <div className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer">
+        <button
+          type="button"
+          onClick={() => onEdit()}
+          className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer"
+        >
           <SquarePen className="w-4 h-4" />
-          <button className="text-sm font-semibold" onClick={() => onEdit()}>
-            Edit
-          </button>
-        </div>
-        <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
+          <span className="text-sm font-semibold">Edit</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onDelete()}
+          className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+        >
           <Trash2 className="w-4 h-4" />
-          <button className="text-sm font-semibold" onClick={() => onDelete()}>
-            Delete
-          </button>
-        </div>
+          <span className="text-sm font-semibold">Delete</span>
+        </button>
       </div>
     </div>
   );

@@ -162,19 +162,14 @@ function Rooms() {
                 Manage and organize all rooms in your kost.
               </h3>
             </div>
-            <div className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer">
-              <div>
-                <Plus className="w-5 h-5" />
-              </div>
-              <div className="pl-1.5">
-                <button
-                  className="font-medium"
-                  onClick={() => setModalAddRoom(true)}
-                >
-                  Add Room
-                </button>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => setModalAddRoom(true)}
+              className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="pl-1.5 font-medium">Add Room</span>
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2">
