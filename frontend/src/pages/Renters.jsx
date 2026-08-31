@@ -146,21 +146,16 @@ function Renters() {
                 Manage all renters in your kost.
               </h3>
             </div>
-            <div className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer">
-              <div>
-                <Plus className="w-5 h-5" />
-              </div>
-              <div className="pl-1.5">
-                <button
-                  className="font-medium"
-                  onClick={() => {
-                    setModalAddRenter(true);
-                  }}
-                >
-                  Add Renter
-                </button>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setModalAddRenter(true);
+              }}
+              className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="pl-1.5 font-medium">Add Renter</span>
+            </button>
           </div>
 
           {/* content */}
@@ -215,24 +210,25 @@ function Renters() {
 
                       <td className="px-6 py-4">
                         <div className="flex justify-between gap-3">
-                          <div className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer">
+                          <button
+                            type="button"
+                            onClick={() => askEditConfirmation(renter)}
+                            className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer"
+                          >
                             <SquarePen className="w-4 h-4" />
-                            <button
-                              className="text-sm font-semibold"
-                              onClick={() => askEditConfirmation(renter)}
-                            >
-                              Edit
-                            </button>
-                          </div>
-                          <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
+                            <span className="text-sm font-semibold">Edit</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => askDeleteConfirmation(renter)}
+                            className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+                          >
                             <Trash2 className="w-4 h-4" />
-                            <button
-                              className="text-sm font-semibold"
-                              onClick={() => askDeleteConfirmation(renter)}
-                            >
+                            <span className="text-sm font-semibold">
                               Delete
-                            </button>
-                          </div>
+                            </span>
+                          </button>
                         </div>
                       </td>
                     </tr>
