@@ -29,7 +29,7 @@ def get_contract_or_404(contract_id: int, db: Session) -> models.Contract:
 
 # create
 @router.post(
-    "/", response_model=schemas.ContractResponse, status_code=status.HTTP_201_CREATED
+    "/", response_model=schemas.ContractCardOut, status_code=status.HTTP_201_CREATED
 )
 def create_contract(
     contract: schemas.ContractCreate, db: Session = Depends(get_db)

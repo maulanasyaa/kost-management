@@ -1,6 +1,6 @@
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import { Plus, Trash2, SquarePen } from 'lucide-react';
+import { Plus, Trash2, SquarePen, Contact } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddModal from '../components/AddModal';
 import EditModal from '../components/EditModal';
@@ -14,6 +14,8 @@ function Contracts() {
   const [renters, setRenters] = useState([]);
 
   const [contractToEdit, setContractToEdit] = useState(null);
+
+  const [contractToDelete, setContractToDelete] = useState(null);
 
   // value for modal
   const [roomID, setRoomID] = useState('');
@@ -122,6 +124,7 @@ function Contracts() {
     }
   };
 
+  // edit contract function
   const askEditConfirmation = (contract) => {
     setContractToEdit(contract.id);
     setRoomID(contract.room.id);
@@ -168,6 +171,31 @@ function Contracts() {
       setTerm('');
       setRoomPrice('');
       setStartDate('');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // delete contract function
+  const askDeleteConfirmation = (contract) => {
+    setContractToDelete(contract);
+  };
+
+  const handleDelete = async (contract_id) => {
+    try {
+      const response = await fetch(`/api/contracts/${contract_id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      setContracts((prev) =>
+        prev.filter((contract) => contract.id !== contract_id)
+      );
+      setContractToDelete(null);
     } catch (err) {
       console.error(err);
     }
@@ -283,7 +311,7 @@ function Contracts() {
 
                           <button
                             type="button"
-                            // onClick={() => askDeleteConfirmation(renter)}
+                            onClick={() => askDeleteConfirmation(contract)}
                             className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -464,6 +492,7 @@ function Contracts() {
         </AddModal>
       )}
 
+      {/* modal edit */}
       {contractToEdit && (
         <EditModal page_name="Room">
           <form className="space-y-4" onSubmit={handleEditContract}>
@@ -623,6 +652,69 @@ function Contracts() {
             </div>
           </form>
         </EditModal>
+      )}
+
+      {/* modal confirmation delete*/}
+      {contractToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl ring-1 ring-gray-900/5">
+            {/* Icon & Message Section */}
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                  />
+                </svg>
+              </div>
+
+              <h3
+                id="modal-title"
+                className="text-lg font-semibold text-gray-900"
+              >
+                Delete Contract {contractToDelete?.room_number}?
+              </h3>
+              <p className="mt-1.5 text-sm text-gray-500">
+                Are you sure you want to delete this contract? This action
+                cannot be undone.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setContractToDelete(null)}
+                className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleDelete(contractToDelete.id);
+                  setContractToDelete(null);
+                }}
+                className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
