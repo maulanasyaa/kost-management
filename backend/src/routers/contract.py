@@ -1,15 +1,14 @@
 from datetime import date
 from typing import Sequence
 
+from database import get_db
 from dateutil.relativedelta import relativedelta
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-
-from database import get_db
 from models import contract as models
 from models import renter as renter_models
 from models import room as room_models
 from schemas import contract as schemas
+from sqlalchemy.orm import Session, joinedload
 
 router = APIRouter(prefix="/contracts", tags=["Contracts"])
 
@@ -30,7 +29,7 @@ def get_contract_or_404(contract_id: int, db: Session) -> models.Contract:
 
 # create
 @router.post(
-    "/", response_model=schemas.ContractResponse, status_code=status.HTTP_201_CREATED
+    "/", response_model=schemas.ContractCardOut, status_code=status.HTTP_201_CREATED
 )
 def create_contract(
     contract: schemas.ContractCreate, db: Session = Depends(get_db)
@@ -86,11 +85,19 @@ def create_contract(
 
 
 # read
-@router.get("/", response_model=list[schemas.ContractResponse])
+@router.get("/", response_model=list[schemas.ContractCardOut])
 def get_contracts(
     skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
 ) -> Sequence[models.Contract]:
-    contract = db.query(models.Contract).offset(skip).limit(limit).all()
+    contract = (
+        db.query(models.Contract)
+        .options(joinedload(models.Contract.room), joinedload(models.Contract.renter))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    # joinedload digunakan untuk menghindari N+1 query problem, sehingga data room dan renter dapat diambil dalam satu query.
+    # joinedload ambil relationship di models
 
     return contract
 
@@ -103,7 +110,7 @@ def get_contract(contract_id: int, db: Session = Depends(get_db)) -> models.Cont
 
 
 # update
-@router.patch("/{contract_id}", response_model=schemas.ContractResponse)
+@router.patch("/{contract_id}", response_model=schemas.ContractCardOut)
 def update_contract(
     contract_id: int, contract: schemas.ContractUpdate, db: Session = Depends(get_db)
 ) -> models.Contract:

@@ -4,7 +4,7 @@ import {
   Tags,
   SquarePen,
   Trash2,
-} from "lucide-react";
+} from 'lucide-react';
 
 function RoomCard({
   onEdit,
@@ -27,9 +27,9 @@ function RoomCard({
         </div>
         <p
           className={
-            status === "occupied"
-              ? "bg-emerald-100 text-emerald-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider"
-              : "bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider"
+            status === 'occupied'
+              ? 'bg-emerald-100 text-emerald-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider'
+              : 'bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider'
           }
         >
           {status}
@@ -44,7 +44,7 @@ function RoomCard({
           <div className="flex items-center gap-3">
             <UserRoundKey className="w-5 h-5 text-accent" />
             <p className="text-gray-800 font-medium text-sm">
-              {renter ? renter.name : "-"}
+              {renter ? renter.name : '-'}
             </p>
           </div>
         </div>
@@ -56,7 +56,7 @@ function RoomCard({
           <div className="flex items-center gap-3">
             <CalendarRange className="w-5 h-5 text-accent" />
             <p className="text-gray-800 font-medium text-sm">
-              {contract ? `${contract.start_date} - ${contract.end_date}` : "-"}
+              {contract ? `${contract.start_date} - ${contract.end_date}` : '-'}
             </p>
           </div>
         </div>
@@ -68,7 +68,7 @@ function RoomCard({
           <div className="flex items-center gap-3">
             <Tags className="w-5 h-5 text-accent" />
             <div className="text-primary font-bold flex items-baseline gap-1 text-lg">
-              {price}{" "}
+              {price}{' '}
               <p className="text-xs font-medium text-gray-500">/ month</p>
             </div>
           </div>
@@ -76,18 +76,23 @@ function RoomCard({
       </div>
 
       <div className="flex justify-between gap-3 mt-2 pt-4 border-t border-border-soft">
-        <div className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer">
+        <button
+          type="button"
+          onClick={() => onEdit()}
+          className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer"
+        >
           <SquarePen className="w-4 h-4" />
-          <button className="text-sm font-semibold" onClick={() => onEdit()}>
-            Edit
-          </button>
-        </div>
-        <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
+          <span className="text-sm font-semibold">Edit</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onDelete()}
+          className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+        >
           <Trash2 className="w-4 h-4" />
-          <button className="text-sm font-semibold" onClick={() => onDelete()}>
-            Delete
-          </button>
-        </div>
+          <span className="text-sm font-semibold">Delete</span>
+        </button>
       </div>
     </div>
   );

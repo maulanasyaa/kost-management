@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
-import { Plus, SquarePen, Trash2 } from "lucide-react";
-import AddModal from "../components/AddModal";
-import EditModal from "../components/EditModal";
+import { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
+import { Plus, SquarePen, Trash2 } from 'lucide-react';
+import AddModal from '../components/AddModal';
+import EditModal from '../components/EditModal';
 
 function Renters() {
   const [renters, setRenters] = useState([]);
-  const [renterName, setRenterName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [ktpNumber, setKtpNumber] = useState("");
+  const [renterName, setRenterName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [ktpNumber, setKtpNumber] = useState('');
 
   const [modalAddRenter, setModalAddRenter] = useState(false);
   const [renterToEdit, setRenterToEdit] = useState(null);
 
   const [renterToDelete, setRenterToDelete] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const PAYLOAD = {
     name: renterName,
@@ -26,8 +26,8 @@ function Renters() {
   useEffect(() => {
     async function getRenters() {
       try {
-        const response = await fetch("/api/renters", {
-          credentials: "include",
+        const response = await fetch('/api/renters', {
+          credentials: 'include',
         });
         const data = await response.json();
         setRenters(data);
@@ -45,22 +45,22 @@ function Renters() {
     const payload = PAYLOAD;
 
     try {
-      const response = await fetch("/api/renters", {
-        method: "POST",
+      const response = await fetch('/api/renters', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
 
         setRenters((prevRenters) => [...prevRenters, data]);
-        setRenterName("");
-        setPhoneNumber("");
-        setKtpNumber("");
+        setRenterName('');
+        setPhoneNumber('');
+        setKtpNumber('');
         setModalAddRenter(false);
       }
     } catch (err) {
@@ -83,25 +83,25 @@ function Renters() {
 
     try {
       const response = await fetch(`/api/renters/${renterToEdit.id}`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
         setRenters((prevRenters) => {
           return prevRenters.map((renter) =>
-            renter.id === renterToEdit.id ? data : renter,
+            renter.id === renterToEdit.id ? data : renter
           );
         });
 
-        setRenterName("");
-        setPhoneNumber("");
-        setKtpNumber("");
+        setRenterName('');
+        setPhoneNumber('');
+        setKtpNumber('');
 
         setRenterToEdit(null);
       }
@@ -118,18 +118,18 @@ function Renters() {
   const handleDelete = async (renterId) => {
     try {
       const response = await fetch(`/api/renters/${renterId}`, {
-        method: "DELETE",
-        credentials: "include",
+        method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
         setRenters((prev) => prev.filter((renter) => renter.id !== renterId));
       } else {
-        setError("Gagal menghapus room");
+        setError('Gagal menghapus room');
       }
     } catch (err) {
       console.log(err);
-      setError("Gagal menghapus room");
+      setError('Gagal menghapus room');
     }
   };
 
@@ -138,32 +138,28 @@ function Renters() {
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <div className="flex-1 p-8 pb-12 overflow-y-auto">
-          <div className="flex justify-between w-full items-end mb-8">
+        <div className="flex flex-col flex-1 p-8 pb-12 overflow-hidden page-card">
+          <div className="flex justify-between w-full items-center mb-6 bg-surface shadow-sm p-4 rounded-xl shrink-0">
             <div>
               <h1 className="font-bold text-3xl text-primary">Renters</h1>
               <h3 className="text-gray-500 pt-1 text-sm">
                 Manage all renters in your kost.
               </h3>
             </div>
-            <div className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer">
-              <div>
-                <Plus className="w-5 h-5" />
-              </div>
-              <div className="pl-1.5">
-                <button
-                  className="font-medium"
-                  onClick={() => {
-                    setModalAddRenter(true);
-                  }}
-                >
-                  Add Renter
-                </button>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setModalAddRenter(true);
+              }}
+              className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="pl-1.5 font-medium">Add Renter</span>
+            </button>
           </div>
+
           {/* content */}
-          <div>
+          <div className="flex-1 overflow-y-auto pr-2">
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-100">
@@ -214,24 +210,25 @@ function Renters() {
 
                       <td className="px-6 py-4">
                         <div className="flex justify-between gap-3">
-                          <div className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer">
+                          <button
+                            type="button"
+                            onClick={() => askEditConfirmation(renter)}
+                            className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer"
+                          >
                             <SquarePen className="w-4 h-4" />
-                            <button
-                              className="text-sm font-semibold"
-                              onClick={() => askEditConfirmation(renter)}
-                            >
-                              Edit
-                            </button>
-                          </div>
-                          <div className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer">
+                            <span className="text-sm font-semibold">Edit</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => askDeleteConfirmation(renter)}
+                            className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+                          >
                             <Trash2 className="w-4 h-4" />
-                            <button
-                              className="text-sm font-semibold"
-                              onClick={() => askDeleteConfirmation(renter)}
-                            >
+                            <span className="text-sm font-semibold">
                               Delete
-                            </button>
-                          </div>
+                            </span>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -314,7 +311,7 @@ function Renters() {
                 type="submit"
                 className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
               >
-                Update Renter
+                Add Renter
               </button>
             </div>
           </form>
@@ -385,9 +382,9 @@ function Renters() {
                 type="button"
                 onClick={() => {
                   setRenterToEdit(null);
-                  setRenterName("");
-                  setPhoneNumber("");
-                  setKtpNumber("");
+                  setRenterName('');
+                  setPhoneNumber('');
+                  setKtpNumber('');
                 }}
                 className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
               >
