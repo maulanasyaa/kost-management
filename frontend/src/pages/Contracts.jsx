@@ -202,31 +202,31 @@ function Contracts() {
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="w-16 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="w-16 px-2 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                       ID
                     </th>
 
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-14 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Room
                     </th>
 
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Renter
                     </th>
 
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-2 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Term (Month)
                     </th>
 
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Price
                     </th>
 
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-16 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Start Date
                     </th>
 
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-16 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                       End Date
                     </th>
 
@@ -239,34 +239,34 @@ function Contracts() {
                 <tbody className="divide-y divide-slate-100 bg-white">
                   {contracts.map((contract) => (
                     <tr
-                      className="transition-colors hover:bg-slate-50"
+                      className="transition-colors hover:bg-slate-50 text-center"
                       key={contract.id}
                     >
-                      <td className="px-6 py-4 text-sm text-slate-700">
+                      <td className="px-6 py-4 text-sm text-slate-700 text-center">
                         {contract.id}
                       </td>
 
-                      <td className="px-6 py-4 font-medium text-slate-900">
+                      <td className="px-6 py-4 font-medium text-slate-900 text-center">
                         {contract.room.room_number} - {contract.room.room_type}
                       </td>
 
-                      <td className="px-6 py-4 text-slate-700">
+                      <td className="px-6 py-4 text-slate-700 text-center">
                         {contract.renter.name}
                       </td>
 
-                      <td className="px-6 py-4 font-mono text-slate-700">
+                      <td className="px-6 py-4 font-mono text-slate-700 text-center">
                         {contract.term}
                       </td>
 
-                      <td className="px-6 py-4 font-mono text-slate-700">
+                      <td className="px-6 py-4 font-mono text-slate-700 text-center">
                         {contract.price}
                       </td>
 
-                      <td className="px-6 py-4 font-mono text-slate-700">
+                      <td className="px-6 py-4 font-mono text-slate-700 text-center">
                         {contract.start_date}
                       </td>
 
-                      <td className="px-6 py-4 font-mono text-slate-700">
+                      <td className="px-6 py-4 font-mono text-slate-700 text-center">
                         {contract.end_date}
                       </td>
 
