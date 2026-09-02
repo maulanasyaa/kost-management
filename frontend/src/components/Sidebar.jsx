@@ -44,9 +44,9 @@ function Sidebar() {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/transaction" className={navLinkClass}>
+            <NavLink to="/transactions" className={navLinkClass}>
               <BanknoteArrowDown className="w-5 h-5" />
-              <p className="text-sm">Transaction</p>
+              <p className="text-sm">Transactions</p>
             </NavLink>
           </li>
         </ul>

@@ -1,9 +1,8 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
-
 from models.transactions import PaymentMethod
+from pydantic import BaseModel, ConfigDict
 
 
 class TransactionBase(BaseModel):
