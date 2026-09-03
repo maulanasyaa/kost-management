@@ -79,9 +79,9 @@ function Contracts() {
       }
     };
 
-    getContracts('');
-    getRooms('');
-    getRenters('');
+    getContracts();
+    getRooms();
+    getRenters();
   }, []);
 
   // add contract function
