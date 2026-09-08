@@ -7,6 +7,12 @@ import EditModal from '../components/EditModal';
 
 function Transactions() {
   const [transactions, setTransactions] = useState([]);
+  const [modalAddTransaction, setModalAddTransaction] = useState(false);
+
+  const [contracts, setContracts] = useState([]);
+  const [contractID, setContractID] = useState('');
+
+  const [paymentMethod, setPaymentMethod] = useState('');
 
   useEffect(() => {
     const getTransactions = async () => {
@@ -27,10 +33,62 @@ function Transactions() {
       }
     };
 
+    const getContracts = async () => {
+      try {
+        const response = await fetch('/api/contracts', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setContracts(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     getTransactions();
+    getContracts();
   }, []);
 
-  console.log(transactions);
+  const handleAddTransaction = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      contract_id: Number(contractID),
+      method: paymentMethod,
+    };
+
+    try {
+      const response = await fetch('/api/transactions', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json();
+        console.log(errorBody);
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setTransactions((prev) => [...prev, data]);
+      setContractID('');
+      setPaymentMethod('');
+
+      setModalAddTransaction(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen bg-surface overflow-hidden">
@@ -47,7 +105,7 @@ function Transactions() {
             </div>
             <button
               type="button"
-              //   onClick={() => setModalAddContract(true)}
+              onClick={() => setModalAddTransaction(true)}
               className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
             >
               <Plus className="w-5 h-5" />
@@ -156,6 +214,111 @@ function Transactions() {
           </div>
         </div>
       </div>
+
+      {/* modal add transaction */}
+      {modalAddTransaction && (
+        <AddModal page_name={'Transactions'}>
+          <form className="space-y-4" onSubmit={handleAddTransaction}>
+            {/* contract dropdown */}
+            <div>
+              <label
+                htmlFor="contractList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Contract
+              </label>
+              <div className="relative">
+                <select
+                  id="contractList"
+                  value={contractID}
+                  onChange={(e) => setContractID(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Contract--
+                  </option>
+                  {contracts.map((contract) => (
+                    <option key={contract.id} value={contract.id}>
+                      Contract {contract.id}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* payment method dropdown */}
+            <div>
+              <label
+                htmlFor="paymentMethodList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Payment Method
+              </label>
+              <div className="relative">
+                <select
+                  id="paymentMethodList"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Payment Method--
+                  </option>
+                  <option value="tunai">Cash</option>
+                  <option value="transfer">Transfer</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setModalAddTransaction(false)}
+                className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Add Transaction
+              </button>
+            </div>
+          </form>
+        </AddModal>
+      )}
     </div>
   );
 }
