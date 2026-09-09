@@ -8,6 +8,7 @@ import EditModal from '../components/EditModal';
 function Transactions() {
   const [transactions, setTransactions] = useState([]);
   const [modalAddTransaction, setModalAddTransaction] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState('');
 
   const [contracts, setContracts] = useState([]);
   const [contractID, setContractID] = useState('');
@@ -85,6 +86,51 @@ function Transactions() {
       setPaymentMethod('');
 
       setModalAddTransaction(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const askEditConfirmation = (transaction) => {
+    setTransactionToEdit(transaction.id);
+    setContractID(transaction.contract_id);
+    setPaymentMethod(transaction.method);
+  };
+
+  const handleEditTransaction = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      contract_id: Number(contractID),
+      method: paymentMethod,
+    };
+
+    try {
+      const response = await fetch(`/api/transactions/${transactionToEdit}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json();
+        console.log(errorBody);
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setTransactions((prev) =>
+        prev.map((transaction) =>
+          transaction.id == transactionToEdit ? data : transaction
+        )
+      );
+
+      setContractID('');
+      setPaymentMethod('');
+      setTransactionToEdit('');
     } catch (err) {
       console.error(err);
     }
@@ -187,7 +233,7 @@ function Transactions() {
                         <div className="flex justify-between gap-3">
                           <button
                             type="button"
-                            // onClick={() => askEditConfirmation(contract)}
+                            onClick={() => askEditConfirmation(transaction)}
                             className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer"
                           >
                             <SquarePen className="w-4 h-4" />
@@ -318,6 +364,111 @@ function Transactions() {
             </div>
           </form>
         </AddModal>
+      )}
+
+      {/* modal edit transaction */}
+      {transactionToEdit && (
+        <EditModal page_name={'Transaction'}>
+          <form className="space-y-4" onSubmit={handleEditTransaction}>
+            {/* contract dropdown */}
+            <div>
+              <label
+                htmlFor="contractList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Contract
+              </label>
+              <div className="relative">
+                <select
+                  id="contractList"
+                  value={contractID}
+                  onChange={(e) => setContractID(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Contract--
+                  </option>
+                  {contracts.map((contract) => (
+                    <option key={contract.id} value={contract.id}>
+                      Contract {contract.id}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* payment method dropdown */}
+            <div>
+              <label
+                htmlFor="paymentMethodList"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Payment Method
+              </label>
+              <div className="relative">
+                <select
+                  id="paymentMethodList"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
+                >
+                  <option value="" disabled hidden>
+                    -- Select Payment Method--
+                  </option>
+                  <option value="tunai">Cash</option>
+                  <option value="transfer">Transfer</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setTransactionToEdit('')}
+                className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
+              >
+                Edit Transaction
+              </button>
+            </div>
+          </form>
+        </EditModal>
       )}
     </div>
   );
