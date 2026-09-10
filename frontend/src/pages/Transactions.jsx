@@ -9,6 +9,7 @@ function Transactions() {
   const [transactions, setTransactions] = useState([]);
   const [modalAddTransaction, setModalAddTransaction] = useState(false);
   const [transactionToEdit, setTransactionToEdit] = useState('');
+  const [transactionToDelete, setTransactionToDelete] = useState('');
 
   const [contracts, setContracts] = useState([]);
   const [contractID, setContractID] = useState('');
@@ -136,6 +137,33 @@ function Transactions() {
     }
   };
 
+  const askDeleteConfirmation = (transaction) => {
+    setTransactionToDelete(transaction);
+  };
+
+  const handleDelete = async (transaction_id) => {
+    try {
+      const response = await fetch(`/api/transactions/${transaction_id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json();
+        console.log(errorBody);
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      setTransactions((prev) =>
+        prev.filter((transaction) => transaction.id !== transaction_id)
+      );
+
+      setTransactionToDelete('');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-surface overflow-hidden">
       <Navbar />
@@ -242,7 +270,7 @@ function Transactions() {
 
                           <button
                             type="button"
-                            // onClick={() => askDeleteConfirmation(contract)}
+                            onClick={() => askDeleteConfirmation(transaction)}
                             className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -469,6 +497,68 @@ function Transactions() {
             </div>
           </form>
         </EditModal>
+      )}
+
+      {transactionToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl ring-1 ring-gray-900/5">
+            {/* Icon & Message Section */}
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                  />
+                </svg>
+              </div>
+
+              <h3
+                id="modal-title"
+                className="text-lg font-semibold text-gray-900"
+              >
+                Delete Transaction {transactionToDelete.id}?
+              </h3>
+              <p className="mt-1.5 text-sm text-gray-500">
+                Are you sure you want to delete this transaction? This action
+                cannot be undone.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setTransactionToDelete(null)}
+                className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleDelete(transactionToDelete.id);
+                  setTransactionToDelete('');
+                }}
+                className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
