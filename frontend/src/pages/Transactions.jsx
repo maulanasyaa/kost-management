@@ -1,30 +1,40 @@
-import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
 import { Plus, Trash2, SquarePen, Contact } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddModal from '../components/AddModal';
 import EditModal from '../components/EditModal';
 
-function Contracts() {
+function Transactions() {
+  const [transactions, setTransactions] = useState([]);
+  const [modalAddTransaction, setModalAddTransaction] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState('');
+  const [transactionToDelete, setTransactionToDelete] = useState('');
+
   const [contracts, setContracts] = useState([]);
-  const [modalAddContract, setModalAddContract] = useState(false);
+  const [contractID, setContractID] = useState('');
 
-  const [rooms, setRooms] = useState([]);
-
-  const [renters, setRenters] = useState([]);
-
-  const [contractToEdit, setContractToEdit] = useState(null);
-
-  const [contractToDelete, setContractToDelete] = useState(null);
-
-  // value for modal
-  const [roomID, setRoomID] = useState('');
-  const [renterID, setRenterID] = useState('');
-  const [term, setTerm] = useState('');
-  const [roomPrice, setRoomPrice] = useState('');
-  const [startDate, setStartDate] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
 
   useEffect(() => {
+    const getTransactions = async () => {
+      try {
+        const response = await fetch('/api/transactions', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setTransactions(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     const getContracts = async () => {
       try {
         const response = await fetch('/api/contracts', {
@@ -43,61 +53,20 @@ function Contracts() {
       }
     };
 
-    const getRooms = async () => {
-      try {
-        const response = await fetch('/api/rooms', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setRooms(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    const getRenters = async () => {
-      try {
-        const response = await fetch('/api/renters', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setRenters(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
+    getTransactions();
     getContracts();
-    getRooms();
-    getRenters();
   }, []);
 
-  // add contract function
-  const handleAddContract = async (e) => {
+  const handleAddTransaction = async (e) => {
     e.preventDefault();
 
     const payload = {
-      room_id: roomID,
-      renter_id: renterID,
-      term: term,
-      price: roomPrice,
-      start_date: startDate,
+      contract_id: Number(contractID),
+      method: paymentMethod,
     };
 
     try {
-      const response = await fetch('/api/contracts', {
+      const response = await fetch('/api/transactions', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -107,46 +76,38 @@ function Contracts() {
       });
 
       if (!response.ok) {
+        const errorBody = await response.json();
+        console.log(errorBody);
         throw new Error(`HTTP error: ${response.status}`);
       }
 
       const data = await response.json();
-      setContracts((prevContracts) => [...prevContracts, data]);
-      setRoomID('');
-      setRenterID('');
-      setTerm();
-      setRoomPrice();
-      setStartDate();
+      setTransactions((prev) => [...prev, data]);
+      setContractID('');
+      setPaymentMethod('');
 
-      setModalAddContract(false);
+      setModalAddTransaction(false);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // edit contract function
-  const askEditConfirmation = (contract) => {
-    setContractToEdit(contract.id);
-    setRoomID(contract.room.id);
-    setRenterID(contract.renter.id);
-    setTerm(contract.term);
-    setRoomPrice(contract.price);
-    setStartDate(contract.start_date);
+  const askEditConfirmation = (transaction) => {
+    setTransactionToEdit(transaction.id);
+    setContractID(transaction.contract_id);
+    setPaymentMethod(transaction.method);
   };
 
-  const handleEditContract = async (e) => {
+  const handleEditTransaction = async (e) => {
     e.preventDefault();
 
     const payload = {
-      room_id: roomID,
-      renter_id: renterID,
-      term: term,
-      price: roomPrice,
-      start_date: startDate,
+      contract_id: Number(contractID),
+      method: paymentMethod,
     };
 
     try {
-      const response = await fetch(`/api/contracts/${contractToEdit}`, {
+      const response = await fetch(`/api/transactions/${transactionToEdit}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -156,46 +117,48 @@ function Contracts() {
       });
 
       if (!response.ok) {
+        const errorBody = await response.json();
+        console.log(errorBody);
         throw new Error(`HTTP error: ${response.status}`);
       }
 
       const data = await response.json();
-      setContracts((prevContracts) =>
-        prevContracts.map((contract) =>
-          contract.id == contractToEdit ? data : contract
+      setTransactions((prev) =>
+        prev.map((transaction) =>
+          transaction.id == transactionToEdit ? data : transaction
         )
       );
-      setContractToEdit('');
-      setRoomID('');
-      setRenterID('');
-      setTerm('');
-      setRoomPrice('');
-      setStartDate('');
+
+      setContractID('');
+      setPaymentMethod('');
+      setTransactionToEdit('');
     } catch (err) {
       console.error(err);
     }
   };
 
-  // delete contract function
-  const askDeleteConfirmation = (contract) => {
-    setContractToDelete(contract);
+  const askDeleteConfirmation = (transaction) => {
+    setTransactionToDelete(transaction);
   };
 
-  const handleDelete = async (contract_id) => {
+  const handleDelete = async (transaction_id) => {
     try {
-      const response = await fetch(`/api/contracts/${contract_id}`, {
+      const response = await fetch(`/api/transactions/${transaction_id}`, {
         method: 'DELETE',
         credentials: 'include',
       });
 
       if (!response.ok) {
+        const errorBody = await response.json();
+        console.log(errorBody);
         throw new Error(`HTTP error: ${response.status}`);
       }
 
-      setContracts((prev) =>
-        prev.filter((contract) => contract.id !== contract_id)
+      setTransactions((prev) =>
+        prev.filter((transaction) => transaction.id !== transaction_id)
       );
-      setContractToDelete(null);
+
+      setTransactionToDelete('');
     } catch (err) {
       console.error(err);
     }
@@ -209,18 +172,18 @@ function Contracts() {
         <div className="flex flex-col flex-1 p-8 pb-12 overflow-hidden page-card">
           <div className="flex justify-between w-full items-center mb-6 bg-surface shadow-sm p-4 rounded-xl shrink-0">
             <div>
-              <h1 className="font-bold text-3xl text-primary">Contracts</h1>
+              <h1 className="font-bold text-3xl text-primary">Transactions</h1>
               <h3 className="text-gray-500 pt-1 text-sm">
-                Manage all contracts in your kost.
+                Manage all transactions in your kost.
               </h3>
             </div>
             <button
               type="button"
-              onClick={() => setModalAddContract(true)}
+              onClick={() => setModalAddTransaction(true)}
               className="flex flex-row bg-accent hover:bg-accent-hover text-white items-center p-2.5 px-4 rounded-lg shadow-sm transition-colors duration-200 cursor-pointer"
             >
               <Plus className="w-5 h-5" />
-              <span className="pl-1.5 font-medium">Add Contract</span>
+              <span className="pl-1.5 font-medium">Add Transaction</span>
             </button>
           </div>
 
@@ -234,28 +197,24 @@ function Contracts() {
                       ID
                     </th>
 
-                    <th className="px-14 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Room
-                    </th>
-
-                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Renter
-                    </th>
-
                     <th className="px-2 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Term (Month)
+                      Contract
                     </th>
 
                     <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Price
+                      Amount
+                    </th>
+
+                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Method
+                    </th>
+
+                    <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Status
                     </th>
 
                     <th className="px-16 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Start Date
-                    </th>
-
-                    <th className="px-16 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      End Date
+                      Created At
                     </th>
 
                     <th className="w-40 px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -265,44 +224,44 @@ function Contracts() {
                 </thead>
 
                 <tbody className="divide-y divide-slate-100 bg-white">
-                  {contracts.map((contract) => (
+                  {transactions.map((transaction) => (
                     <tr
                       className="transition-colors hover:bg-slate-50 text-center"
-                      key={contract.id}
+                      key={transaction.id}
                     >
                       <td className="px-6 py-4 text-sm text-slate-700 text-center">
-                        {contract.id}
-                      </td>
-
-                      <td className="px-6 py-4 font-medium text-slate-900 text-center">
-                        {contract.room.room_number} - {contract.room.room_type}
-                      </td>
-
-                      <td className="px-6 py-4 text-slate-700 text-center">
-                        {contract.renter.name}
+                        {transaction.id}
                       </td>
 
                       <td className="px-6 py-4 font-mono text-slate-700 text-center">
-                        {contract.term}
+                        {transaction.contract_id}
                       </td>
 
                       <td className="px-6 py-4 font-mono text-slate-700 text-center">
-                        {contract.price}
+                        {transaction.amount}
                       </td>
 
                       <td className="px-6 py-4 font-mono text-slate-700 text-center">
-                        {contract.start_date}
+                        {transaction.method}
                       </td>
 
                       <td className="px-6 py-4 font-mono text-slate-700 text-center">
-                        {contract.end_date}
+                        <span
+                          className={`px-3 py-1.5 border rounded-lg text-sm font-mono w-24 block mx-auto text-center ${transaction.is_paid ? 'text-success bg-success/10 border-success/30' : 'text-warning bg-warning/10 border-warning/30'}`}
+                        >
+                          {transaction.is_paid ? 'PAID' : 'PENDING'}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 font-mono text-slate-700 text-center">
+                        {transaction.created_at}
                       </td>
 
                       <td className="px-6 py-4">
                         <div className="flex justify-between gap-3">
                           <button
                             type="button"
-                            onClick={() => askEditConfirmation(contract)}
+                            onClick={() => askEditConfirmation(transaction)}
                             className="flex-1 border border-accent/30 bg-accent/10 text-accent py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer"
                           >
                             <SquarePen className="w-4 h-4" />
@@ -311,7 +270,7 @@ function Contracts() {
 
                           <button
                             type="button"
-                            onClick={() => askDeleteConfirmation(contract)}
+                            onClick={() => askDeleteConfirmation(transaction)}
                             className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -330,31 +289,31 @@ function Contracts() {
         </div>
       </div>
 
-      {/* modal add contract */}
-      {modalAddContract && (
-        <AddModal page_name="Contract">
-          <form className="space-y-4" onSubmit={handleAddContract}>
-            {/* room dropdown */}
+      {/* modal add transaction */}
+      {modalAddTransaction && (
+        <AddModal page_name={'Transactions'}>
+          <form className="space-y-4" onSubmit={handleAddTransaction}>
+            {/* contract dropdown */}
             <div>
               <label
-                htmlFor="roomList"
+                htmlFor="contractList"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Room
+                Contract
               </label>
               <div className="relative">
                 <select
-                  id="roomList"
-                  value={roomID}
-                  onChange={(e) => setRoomID(e.target.value)}
+                  id="contractList"
+                  value={contractID}
+                  onChange={(e) => setContractID(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
-                    -- Select Room--
+                    -- Select Contract--
                   </option>
-                  {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      Room {room.room_number}
+                  {contracts.map((contract) => (
+                    <option key={contract.id} value={contract.id}>
+                      Contract {contract.id}
                     </option>
                   ))}
                 </select>
@@ -376,29 +335,26 @@ function Contracts() {
               </div>
             </div>
 
-            {/* renter dropdown */}
+            {/* payment method dropdown */}
             <div>
               <label
-                htmlFor="renterList"
+                htmlFor="paymentMethodList"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Renter
+                Payment Method
               </label>
               <div className="relative">
                 <select
-                  id="renterList"
-                  value={renterID}
-                  onChange={(e) => setRenterID(e.target.value)}
+                  id="paymentMethodList"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
-                    -- Select Renter--
+                    -- Select Payment Method--
                   </option>
-                  {renters.map((renter) => (
-                    <option key={renter.id} value={renter.id}>
-                      {renter.name}
-                    </option>
-                  ))}
+                  <option value="tunai">Cash</option>
+                  <option value="transfer">Transfer</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                   <svg
@@ -416,67 +372,13 @@ function Contracts() {
                   </svg>
                 </div>
               </div>
-            </div>
-
-            {/* Term Input */}
-            <div>
-              <label
-                htmlFor="term"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
-              >
-                Term
-              </label>
-              <input
-                type="number"
-                id="term"
-                value={term}
-                onChange={(e) => setTerm(e.target.value)}
-                placeholder="e.g. 6"
-                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
-              />
-            </div>
-
-            {/* Price Input */}
-            <div>
-              <label
-                htmlFor="roomPrice"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
-              >
-                Price
-              </label>
-              <input
-                type="text"
-                id="roomPrice"
-                value={roomPrice}
-                onChange={(e) => setRoomPrice(e.target.value)}
-                placeholder="e.g. 1000000"
-                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              />
-            </div>
-
-            {/* Start Date Input */}
-            <div>
-              <label
-                htmlFor="startDate"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
-              >
-                Start Date
-              </label>
-              <input
-                type="date"
-                placeholder="Choose start date"
-                id="startDate"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
-              />
             </div>
 
             {/* Action Buttons */}
             <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={() => setModalAddContract(false)}
+                onClick={() => setModalAddTransaction(false)}
                 className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
               >
                 Cancel
@@ -485,38 +387,38 @@ function Contracts() {
                 type="submit"
                 className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
               >
-                Add Contract
+                Add Transaction
               </button>
             </div>
           </form>
         </AddModal>
       )}
 
-      {/* modal edit */}
-      {contractToEdit && (
-        <EditModal page_name="Room">
-          <form className="space-y-4" onSubmit={handleEditContract}>
-            {/* room dropdown */}
+      {/* modal edit transaction */}
+      {transactionToEdit && (
+        <EditModal page_name={'Transaction'}>
+          <form className="space-y-4" onSubmit={handleEditTransaction}>
+            {/* contract dropdown */}
             <div>
               <label
-                htmlFor="roomList"
+                htmlFor="contractList"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Room
+                Contract
               </label>
               <div className="relative">
                 <select
-                  id="roomList"
-                  value={roomID}
-                  onChange={(e) => setRoomID(e.target.value)}
+                  id="contractList"
+                  value={contractID}
+                  onChange={(e) => setContractID(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
-                    -- Select Room--
+                    -- Select Contract--
                   </option>
-                  {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      Room {room.room_number}
+                  {contracts.map((contract) => (
+                    <option key={contract.id} value={contract.id}>
+                      Contract {contract.id}
                     </option>
                   ))}
                 </select>
@@ -538,29 +440,26 @@ function Contracts() {
               </div>
             </div>
 
-            {/* renter dropdown */}
+            {/* payment method dropdown */}
             <div>
               <label
-                htmlFor="renterList"
+                htmlFor="paymentMethodList"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Renter
+                Payment Method
               </label>
               <div className="relative">
                 <select
-                  id="renterList"
-                  value={renterID}
-                  onChange={(e) => setRenterID(e.target.value)}
+                  id="paymentMethodList"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
                   className="w-full appearance-none rounded-lg border border-border-soft bg-white py-2.5 pl-3.5 pr-10 text-sm text-gray-900 shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors cursor-pointer"
                 >
                   <option value="" disabled hidden>
-                    -- Select Renter--
+                    -- Select Payment Method--
                   </option>
-                  {renters.map((renter) => (
-                    <option key={renter.id} value={renter.id}>
-                      {renter.name}
-                    </option>
-                  ))}
+                  <option value="tunai">Cash</option>
+                  <option value="transfer">Transfer</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                   <svg
@@ -578,67 +477,13 @@ function Contracts() {
                   </svg>
                 </div>
               </div>
-            </div>
-
-            {/* Term Input */}
-            <div>
-              <label
-                htmlFor="term"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
-              >
-                Term
-              </label>
-              <input
-                type="number"
-                id="term"
-                value={term}
-                onChange={(e) => setTerm(e.target.value)}
-                placeholder="e.g. 6"
-                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
-              />
-            </div>
-
-            {/* Price Input */}
-            <div>
-              <label
-                htmlFor="roomPrice"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
-              >
-                Price
-              </label>
-              <input
-                type="text"
-                id="roomPrice"
-                value={roomPrice}
-                onChange={(e) => setRoomPrice(e.target.value)}
-                placeholder="e.g. 1000000"
-                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              />
-            </div>
-
-            {/* Start Date Input */}
-            <div>
-              <label
-                htmlFor="startDate"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
-              >
-                Start Date
-              </label>
-              <input
-                type="date"
-                placeholder="Choose start date"
-                id="startDate"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full rounded-lg border border-border-soft px-3.5 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
-              />
             </div>
 
             {/* Action Buttons */}
             <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={() => setContractToEdit('')}
+                onClick={() => setTransactionToEdit('')}
                 className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-1 transition-colors cursor-pointer"
               >
                 Cancel
@@ -647,15 +492,14 @@ function Contracts() {
                 type="submit"
                 className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 transition-colors cursor-pointer"
               >
-                Edit Contract
+                Edit Transaction
               </button>
             </div>
           </form>
         </EditModal>
       )}
 
-      {/* modal confirmation delete*/}
-      {contractToDelete && (
+      {transactionToDelete && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200"
           role="dialog"
@@ -685,10 +529,10 @@ function Contracts() {
                 id="modal-title"
                 className="text-lg font-semibold text-gray-900"
               >
-                Delete Contract {contractToDelete?.room_number}?
+                Delete Transaction {transactionToDelete.id}?
               </h3>
               <p className="mt-1.5 text-sm text-gray-500">
-                Are you sure you want to delete this contract? This action
+                Are you sure you want to delete this transaction? This action
                 cannot be undone.
               </p>
             </div>
@@ -697,7 +541,7 @@ function Contracts() {
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
               <button
                 type="button"
-                onClick={() => setContractToDelete(null)}
+                onClick={() => setTransactionToDelete(null)}
                 className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors cursor-pointer"
               >
                 Cancel
@@ -705,8 +549,8 @@ function Contracts() {
               <button
                 type="button"
                 onClick={() => {
-                  handleDelete(contractToDelete.id);
-                  setContractToDelete(null);
+                  handleDelete(transactionToDelete.id);
+                  setTransactionToDelete('');
                 }}
                 className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
               >
@@ -720,4 +564,4 @@ function Contracts() {
   );
 }
 
-export default Contracts;
+export default Transactions;
