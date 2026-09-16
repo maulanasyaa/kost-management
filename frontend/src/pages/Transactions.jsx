@@ -1,6 +1,6 @@
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import { Plus, Trash2, SquarePen, Contact } from 'lucide-react';
+import { Plus, Trash2, SquarePen, BanknoteArrowUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddModal from '../components/AddModal';
 import EditModal from '../components/EditModal';
@@ -10,6 +10,7 @@ function Transactions() {
   const [modalAddTransaction, setModalAddTransaction] = useState(false);
   const [transactionToEdit, setTransactionToEdit] = useState('');
   const [transactionToDelete, setTransactionToDelete] = useState('');
+  const [transactionToPaid, setTransactionToPaid] = useState('');
 
   const [contracts, setContracts] = useState([]);
   const [contractID, setContractID] = useState('');
@@ -164,6 +165,37 @@ function Transactions() {
     }
   };
 
+  // set as paid
+  const askPaidConfirmation = (transaction) => {
+    setTransactionToPaid(transaction.id);
+  };
+
+  const handleSetAsPaid = async (transaction_id) => {
+    try {
+      const response = await fetch(`/api/transactions/${transaction_id}/pay`, {
+        method: 'PATCH',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json();
+        console.log(errorBody);
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setTransactions((prev) =>
+        prev.map((transaction) =>
+          transaction_id === transaction.id ? data : transaction
+        )
+      );
+
+      setTransactionToPaid('');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-surface overflow-hidden">
       <Navbar />
@@ -259,6 +291,15 @@ function Transactions() {
 
                       <td className="px-6 py-4">
                         <div className="flex justify-between gap-3">
+                          <button
+                            type="button"
+                            onClick={() => askPaidConfirmation(transaction)}
+                            className="flex-1 border border-success/30 bg-success/10 text-success py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-accent hover:text-white transition-all duration-300 cursor-pointer"
+                          >
+                            <BanknoteArrowUp className="w-4 h-4" />
+                            <span className="text-sm font-semibold">Paid</span>
+                          </button>
+
                           <button
                             type="button"
                             onClick={() => askEditConfirmation(transaction)}
@@ -499,6 +540,7 @@ function Transactions() {
         </EditModal>
       )}
 
+      {/* modal delete transaction */}
       {transactionToDelete && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200"
@@ -555,6 +597,68 @@ function Transactions() {
                 className="flex-1 border border-red-200 bg-red-50 text-red-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-pointer"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* modal set as paid */}
+      {transactionToPaid && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl ring-1 ring-gray-900/5">
+            {/* Icon & Message Section */}
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12.75l6.75-6.75 6.75 6.75"
+                  />
+                </svg>
+              </div>
+
+              <h3
+                id="modal-title"
+                className="text-lg font-semibold text-gray-900"
+              >
+                Set Transaction {transactionToPaid} as Paid?
+              </h3>
+              <p className="mt-1.5 text-sm text-gray-500">
+                Are you sure you want to set this transaction as paid? This
+                action cannot be undone.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setTransactionToPaid('')}
+                className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors duration-300 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleSetAsPaid(transactionToPaid);
+                }}
+                className="flex-1 border border-green-200 bg-green-50 text-green-600 py-2 px-4 rounded-lg flex justify-center items-center gap-2 hover:bg-green-600 hover:text-white transition-all duration-300 cursor-pointer"
+              >
+                Set as Paid
               </button>
             </div>
           </div>
